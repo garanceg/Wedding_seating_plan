@@ -1,0 +1,928 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>config &#8212; Event-Assignement 2023 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for config</h1><div class="highlight"><pre>
+<span></span><span class="c1">#</span>
+<span class="c1"># Copyright 2019-2021 by Vinay Sajip. All Rights Reserved.</span>
+<span class="c1">#</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Mapping</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Mapping</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">io</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="kn">from</span> <span class="nn">.tokens</span> <span class="kn">import</span> <span class="n">Token</span><span class="p">,</span> <span class="n">SCALAR_TOKENS</span><span class="p">,</span> <span class="n">WORD</span><span class="p">,</span> <span class="n">BACKTICK</span><span class="p">,</span> <span class="n">DOLLAR</span>
+<span class="kn">from</span> <span class="nn">.parser</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Parser</span><span class="p">,</span>
+    <span class="n">MappingBody</span><span class="p">,</span>
+    <span class="n">ListBody</span><span class="p">,</span>
+    <span class="n">ASTNode</span><span class="p">,</span>
+    <span class="n">ODict</span><span class="p">,</span>
+    <span class="n">open_file</span><span class="p">,</span>
+    <span class="n">RecognizerError</span><span class="p">,</span>
+    <span class="n">ParserError</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Config&#39;</span><span class="p">,</span> <span class="s1">&#39;ConfigFormatError&#39;</span><span class="p">,</span> <span class="s1">&#39;ConfigError&#39;</span><span class="p">]</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+
+    <span class="k">class</span> <span class="nc">timezone</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">td</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">td</span> <span class="o">=</span> <span class="n">td</span>
+
+        <span class="k">def</span> <span class="nf">utcoffset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">td</span>
+
+        <span class="k">def</span> <span class="nf">dst</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+            <span class="k">return</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timezone</span>
+
+    <span class="n">basestring</span> <span class="o">=</span> <span class="nb">str</span>
+
+<span class="n">__version__</span> <span class="o">=</span> <span class="s1">&#39;0.5.1&#39;</span>
+
+
+<div class="viewcode-block" id="ConfigFormatError"><a class="viewcode-back" href="../config.html#config.ConfigFormatError">[docs]</a><span class="k">class</span> <span class="nc">ConfigFormatError</span><span class="p">(</span><span class="n">ParserError</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="ConfigError"><a class="viewcode-back" href="../config.html#config.ConfigError">[docs]</a><span class="k">class</span> <span class="nc">ConfigError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<span class="c1"># This is a marker used in get(key, default_value) to catch rather than KeyError</span>
+<span class="k">class</span> <span class="nc">KeyNotFoundError</span><span class="p">(</span><span class="n">ConfigError</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+
+<span class="k">def</span> <span class="nf">_parse_path</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">advance</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">p</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">kind</span> <span class="o">!=</span> <span class="n">WORD</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Invalid path: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">primary</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">p</span><span class="o">.</span><span class="n">at_end</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Invalid path: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">RecognizerError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Invalid path: </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span> <span class="nf">_path_iterator</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">visit</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">Token</span><span class="p">):</span>
+            <span class="k">yield</span> <span class="n">node</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">op</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;op&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;operand&#39;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">visit</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;operand&#39;</span><span class="p">]):</span>
+                    <span class="k">yield</span> <span class="n">val</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">visit</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;lhs&#39;</span><span class="p">]):</span>
+                    <span class="k">yield</span> <span class="n">val</span>
+                <span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">op</span><span class="p">,</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;rhs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="n">op</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">,</span> <span class="s1">&#39;:&#39;</span><span class="p">)</span>
+                    <span class="k">yield</span> <span class="n">op</span><span class="p">,</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;rhs&#39;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">visit</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">v</span>
+
+
+<span class="k">def</span> <span class="nf">_to_source</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">Token</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+    <span class="n">pi</span> <span class="o">=</span> <span class="n">_path_iterator</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="p">[</span><span class="nb">next</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">op</span><span class="p">,</span> <span class="n">operand</span> <span class="ow">in</span> <span class="n">pi</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">op</span> <span class="o">==</span> <span class="s1">&#39;.&#39;</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">operand</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">op</span> <span class="o">==</span> <span class="s1">&#39;:&#39;</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)</span>
+            <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="n">operand</span>
+            <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_to_source</span><span class="p">(</span><span class="n">start</span><span class="p">))</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">stop</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_to_source</span><span class="p">(</span><span class="n">stop</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+                <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_to_source</span><span class="p">(</span><span class="n">step</span><span class="p">))</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;]&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">op</span> <span class="o">==</span> <span class="s1">&#39;[&#39;</span><span class="p">:</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;[&#39;</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_to_source</span><span class="p">(</span><span class="n">operand</span><span class="p">))</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;]&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Unable to navigate: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">node</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_unwrap</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">DictWrapper</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">ListWrapper</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">o</span><span class="o">.</span><span class="n">as_list</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">o</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span> <span class="nf">_string_for</span><span class="p">(</span><span class="n">o</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">o</span><span class="p">:</span>
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_string_for</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+        <span class="k">return</span> <span class="s1">&#39;[</span><span class="si">%s</span><span class="s1">]&#39;</span> <span class="o">%</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">o</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">_string_for</span><span class="p">(</span><span class="n">v</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="s1">&#39;{</span><span class="si">%s</span><span class="s1">}&#39;</span> <span class="o">%</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+<span class="c1"># noinspection PyUnboundLocalVariable</span>
+<span class="n">_SYSTEM_TYPES</span> <span class="o">=</span> <span class="p">(</span><span class="n">basestring</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">)</span>
+<span class="c1"># noinspection PyTypeChecker</span>
+<span class="n">_SCALAR_TYPES</span> <span class="o">=</span> <span class="n">_SYSTEM_TYPES</span> <span class="o">+</span> <span class="p">(</span><span class="n">Token</span><span class="p">,)</span>
+
+
+<span class="k">def</span> <span class="nf">_merge_dicts</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">source</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">source</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">target</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">target</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
+            <span class="n">_merge_dicts</span><span class="p">(</span><span class="n">target</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">target</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">source</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+
+
+<span class="c1"># use negative lookahead to disallow anything starting with a digit.</span>
+<span class="n">_IDENTIFIER_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^(?!\d)(\w+)$&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">U</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">is_identifier</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">_IDENTIFIER_PATTERN</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+
+
+<span class="k">class</span> <span class="nc">DictWrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">except</span> <span class="n">KeyNotFoundError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">default</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;string required, but found </span><span class="si">%r</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data</span> <span class="ow">or</span> <span class="n">is_identifier</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">_evaluated</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">KeyNotFoundError</span><span class="p">(</span><span class="s1">&#39;not found in configuration: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">_parse_path</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">_get_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="c1"># data[key] = result</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+    <span class="k">def</span> <span class="fm">__or__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span>
+        <span class="n">_merge_dicts</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">as_dict</span><span class="p">())</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+    <span class="fm">__add__</span> <span class="o">=</span> <span class="fm">__or__</span>
+
+    <span class="k">def</span> <span class="fm">__sub__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">DictWrapper</span><span class="p">,</span> <span class="n">Config</span><span class="p">)):</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">ListWrapper</span><span class="p">):</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">as_list</span><span class="p">()</span>
+            <span class="n">result</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">60</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="mi">57</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">(</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ListWrapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">data</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>  <span class="c1"># slices handled in Evaluator</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">evaluated</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_evaluated</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">evaluated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span> <span class="o">=</span> <span class="n">evaluated</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">as_list</span><span class="p">()</span> <span class="o">+</span> <span class="n">other</span><span class="o">.</span><span class="n">as_list</span><span class="p">())</span>
+
+    <span class="k">def</span> <span class="nf">as_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="p">(</span><span class="n">DictWrapper</span><span class="p">,</span> <span class="n">Config</span><span class="p">)):</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ListWrapper</span><span class="p">):</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">as_list</span><span class="p">()</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">as_list</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">60</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="p">[:</span><span class="mi">57</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;...&#39;</span>
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">(</span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+
+
+<span class="n">_ISO_DATETIME_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="sa">r</span><span class="s1">&#39;\d</span><span class="si">{4}</span><span class="s1">-\d</span><span class="si">{2}</span><span class="s1">-\d</span><span class="si">{2}</span><span class="s1">(([ T])&#39;</span>
+    <span class="sa">r</span><span class="s1">&#39;((?P&lt;time&gt;\d</span><span class="si">{2}</span><span class="s1">:\d</span><span class="si">{2}</span><span class="s1">:\d</span><span class="si">{2}</span><span class="s1">)&#39;</span>
+    <span class="sa">r</span><span class="s1">&#39;(?P&lt;ms&gt;\.\d{1,6})?&#39;</span>
+    <span class="sa">r</span><span class="s1">&#39;((?P&lt;sign&gt;[+-])(?P&lt;oh&gt;\d</span><span class="si">{2}</span><span class="s1">):&#39;</span>
+    <span class="sa">r</span><span class="s1">&#39;(?P&lt;om&gt;\d</span><span class="si">{2}</span><span class="s1">)(:(?P&lt;os&gt;\d</span><span class="si">{2}</span><span class="s1">)&#39;</span>
+    <span class="sa">r</span><span class="s1">&#39;(?P&lt;oms&gt;\.\d{1,6})?)?)?))?$&#39;</span>
+<span class="p">)</span>
+<span class="n">_DOTTED_WORDS</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;[A-Za-z_]\w*(\.[A-Za-z_]\w*)*&#39;</span>
+<span class="n">_COLON_OBJECT_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">:(</span><span class="si">%s</span><span class="s1">)?$&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">_DOTTED_WORDS</span><span class="p">,</span> <span class="n">_DOTTED_WORDS</span><span class="p">))</span>
+<span class="n">_DOTTED_OBJECT_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">$&#39;</span> <span class="o">%</span> <span class="n">_DOTTED_WORDS</span><span class="p">)</span>
+<span class="n">_ENV_VALUE_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\$(\w+)(\|(.*))?$&#39;</span><span class="p">)</span>
+<span class="n">_INTERPOLATION_PATTERN</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\$\{([^}]+)\}&#39;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Evaluator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class is used to evaluate AST nodes. A separate class for this (rather</span>
+<span class="sd">    than putting the functionality in Config) because an evaluation context is</span>
+<span class="sd">    sometimes required. For example, resolving references needs to keep track</span>
+<span class="sd">    of references already seen in an evaluation, to catch circular references.</span>
+<span class="sd">    That needs to be done per-evaluation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">op_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;@&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_at&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;$&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_reference&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;:&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_slice&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;+&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_add&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;-&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_subtract&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;*&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_multiply&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;**&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_power&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;/&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_divide&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;//&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_integer_divide&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;%&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_modulo&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;&lt;&lt;&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_left_shift&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;&gt;&gt;&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_right_shift&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;|&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_bitor&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;&amp;&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_bitand&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;^&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_bitxor&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;or&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_logor&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;and&#39;</span><span class="p">:</span> <span class="s1">&#39;eval_logand&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">refs_seen</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">Token</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="n">SCALAR_TOKENS</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">WORD</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">context</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Unknown variable </span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s1"> at </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="n">BACKTICK</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">convert_string</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;Unable to evaluate </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">node</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">ASTNode</span><span class="p">):</span>
+            <span class="n">op</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;op&#39;</span><span class="p">]</span>
+            <span class="n">meth</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">op_map</span><span class="p">[</span><span class="n">op</span><span class="p">]</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meth</span><span class="p">)(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="p">(</span><span class="n">MappingBody</span><span class="p">,</span> <span class="n">ListBody</span><span class="p">)):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">_wrap</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">eval_at</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">operand</span> <span class="o">=</span> <span class="n">node</span><span class="p">[</span><span class="s1">&#39;operand&#39;</span><span class="p">]</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">_evaluated</span><span class="p">(</span><span class="n">operand</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;@ operand must be a string, but is </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">fn</span><span class="p">)</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isabs</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">fn</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">rootdir</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">config</span><span class="o">.</span><span class="n">include_path</span><span class="p">:</span>
+                    <span class="n">p</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ip</span><span class="p">,</span> <span class="n">fn</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+                        <span class="n">found</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Unable to locate </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">fn</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">open_file</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">rootdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">container</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">MappingBody</span><span class="p">):</span>
+                <span class="n">cfg</span> <span class="o">=</span> <span class="n">Config</span><span class="p">(</span>
+                    <span class="kc">None</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">context</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">_cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span>
+                    <span class="n">include_path</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">include_path</span><span class="p">,</span> <span class="n">rootdir</span><span class="o">=</span><span class="n">rootdir</span>
+                <span class="p">)</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="n">config</span>
+                <span class="n">cfg</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">_wrap_mapping</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">cfg</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">_get_from_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">is_ref</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ASTNode</span><span class="p">)</span> <span class="ow">and</span> <span class="n">n</span><span class="p">[</span><span class="s1">&#39;op&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">DOLLAR</span>
+
+        <span class="n">pi</span> <span class="o">=</span> <span class="n">_path_iterator</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">first</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">first</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="c1"># We start the evaluation with the current instance, but a path may</span>
+        <span class="c1"># cross sub-configuration boundaries, and references must always be</span>
+        <span class="c1"># evaluated in the context of the immediately enclosing configuration,</span>
+        <span class="c1"># not the top-level configuration (references are relative to the</span>
+        <span class="c1"># root of the enclosing configuration - otherwise configurations would</span>
+        <span class="c1"># not be standalone. So whenever we cross a sub-configuration boundary,</span>
+        <span class="c1"># the current_evaluator has to be pegged to that sub-configuration.</span>
+        <span class="n">current_evaluator</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">for</span> <span class="n">op</span><span class="p">,</span> <span class="n">operand</span> <span class="ow">in</span> <span class="n">pi</span><span class="p">:</span>
+            <span class="n">need_string</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="p">(</span><span class="n">ListWrapper</span><span class="p">,</span> <span class="n">DictWrapper</span><span class="p">,</span> <span class="n">Config</span><span class="p">)):</span>
+                <span class="n">container</span> <span class="o">=</span> <span class="n">result</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">container</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">_data</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">Config</span><span class="p">):</span>
+                    <span class="n">current_evaluator</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">_evaluator</span>
+                <span class="n">need_string</span> <span class="o">=</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">ListWrapper</span><span class="p">)</span>
+            <span class="n">sliced</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">operand</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">operand</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">current_evaluator</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">operand</span><span class="p">])</span>
+                <span class="n">sliced</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">ListWrapper</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;slices can only operate on lists&#39;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">op</span> <span class="o">!=</span> <span class="s1">&#39;.&#39;</span><span class="p">:</span>
+                <span class="n">operand</span> <span class="o">=</span> <span class="n">current_evaluator</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">operand</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">need_string</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">operand</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;string required, but found </span><span class="si">%r</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">operand</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">operand</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">slice</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span>
+                    <span class="s1">&#39;integer or slice required, but found </span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">operand</span>
+                <span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">container</span><span class="p">[</span><span class="n">operand</span><span class="p">]</span>  <span class="c1"># always use indexing, never attr</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;index out of range: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">operand</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">KeyNotFoundError</span><span class="p">(</span><span class="s1">&#39;not found in configuration: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">operand</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">is_ref</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                <span class="n">vid</span> <span class="o">=</span> <span class="nb">id</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">vid</span> <span class="ow">in</span> <span class="n">current_evaluator</span><span class="o">.</span><span class="n">refs_seen</span><span class="p">:</span>
+                    <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">current_evaluator</span><span class="o">.</span><span class="n">refs_seen</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                        <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">_to_source</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="n">v</span><span class="p">[</span><span class="s1">&#39;operand&#39;</span><span class="p">][</span><span class="s1">&#39;lhs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">parts</span><span class="p">))</span>
+                    <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Circular reference: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">s</span><span class="p">)</span>
+                <span class="n">current_evaluator</span><span class="o">.</span><span class="n">refs_seen</span><span class="p">[</span><span class="n">vid</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+            <span class="k">if</span> <span class="n">sliced</span><span class="p">:</span>
+                <span class="n">v</span> <span class="o">=</span> <span class="n">ListBody</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>  <span class="c1"># ListBody gets wrapped, but not list</span>
+            <span class="c1"># v = config._wrap(v)</span>
+            <span class="n">evaluated</span> <span class="o">=</span> <span class="n">current_evaluator</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">evaluated</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
+                <span class="n">container</span><span class="p">[</span><span class="n">operand</span><span class="p">]</span> <span class="o">=</span> <span class="n">evaluated</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">evaluated</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">eval_reference</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_from_path</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;operand&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">eval_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;lhs&#39;</span><span class="p">])</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;rhs&#39;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">lhs</span> <span class="o">+</span> <span class="n">rhs</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">ListWrapper</span><span class="p">(</span><span class="n">lhs</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Unable to add </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">lhs</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">eval_subtract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;operand&#39;</span> <span class="ow">in</span> <span class="n">node</span><span class="p">:</span>
+            <span class="c1"># unary</span>
+            <span class="n">operand</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;operand&#39;</span><span class="p">])</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">-</span><span class="n">operand</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Unable to negate </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">operand</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;lhs&#39;</span><span class="p">])</span>
+            <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;rhs&#39;</span><span class="p">])</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">lhs</span> <span class="o">-</span> <span class="n">rhs</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Unable to subtract </span><span class="si">%s</span><span class="s1"> from </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">rhs</span><span class="p">,</span> <span class="n">lhs</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">eval_multiply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;lhs&#39;</span><span class="p">])</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;rhs&#39;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lhs</span> <span class="o">*</span> <span class="n">rhs</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Unable to multiply </span><span class="si">%s</span><span class="s1"> by </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">eval_divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;lhs&#39;</span><span class="p">])</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;rhs&#39;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lhs</span> <span class="o">/</span> <span class="n">rhs</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Unable to divide </span><span class="si">%s</span><span class="s1"> by </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">eval_integer_divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;lhs&#39;</span><span class="p">])</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;rhs&#39;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lhs</span> <span class="o">//</span> <span class="n">rhs</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Unable to integer-divide </span><span class="si">%s</span><span class="s1"> by </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">eval_modulo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;lhs&#39;</span><span class="p">])</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;rhs&#39;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lhs</span> <span class="o">%</span> <span class="n">rhs</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Unable to compute </span><span class="si">%s</span><span class="s1"> modulo </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">eval_power</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;lhs&#39;</span><span class="p">])</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;rhs&#39;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lhs</span> <span class="o">**</span> <span class="n">rhs</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Unable to divide </span><span class="si">%s</span><span class="s1"> by </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">eval_left_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;lhs&#39;</span><span class="p">])</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;rhs&#39;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lhs</span> <span class="o">&lt;&lt;</span> <span class="n">rhs</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Unable to left-shift </span><span class="si">%s</span><span class="s1"> by </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">eval_right_shift</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;lhs&#39;</span><span class="p">])</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;rhs&#39;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lhs</span> <span class="o">&gt;&gt;</span> <span class="n">rhs</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Unable to right-shift </span><span class="si">%s</span><span class="s1"> by </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">eval_bitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;lhs&#39;</span><span class="p">])</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;rhs&#39;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lhs</span> <span class="o">|</span> <span class="n">rhs</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Unable to bitwise-or </span><span class="si">%s</span><span class="s1"> and </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">eval_bitand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;lhs&#39;</span><span class="p">])</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;rhs&#39;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lhs</span> <span class="o">&amp;</span> <span class="n">rhs</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Unable to bitwise-and </span><span class="si">%s</span><span class="s1"> and </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">eval_bitxor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;lhs&#39;</span><span class="p">])</span>
+        <span class="n">rhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;rhs&#39;</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lhs</span> <span class="o">^</span> <span class="n">rhs</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Unable to bitwise-xor </span><span class="si">%s</span><span class="s1"> and </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lhs</span><span class="p">,</span> <span class="n">rhs</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">eval_logor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;lhs&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">lhs</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;rhs&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">eval_logand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="n">lhs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;lhs&#39;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">lhs</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">node</span><span class="p">[</span><span class="s1">&#39;rhs&#39;</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">_walk_dotted_path</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">dotted_path</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dotted_path</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">dotted_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">dotted_path</span>
+    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">parts</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span> <span class="nf">_resolve_dotted_object</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="n">modname</span> <span class="o">=</span> <span class="n">parts</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># first part must be a module/package.</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">modname</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">parts</span><span class="p">:</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">modname</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="n">parts</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">modname</span> <span class="o">=</span> <span class="n">s</span>
+        <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">_walk_dotted_path</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">parts</span><span class="p">)</span>
+            <span class="k">break</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span> <span class="nf">_resolve_colon_object</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="n">module_name</span><span class="p">,</span> <span class="n">dotted_path</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">module_name</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">:</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="n">module_name</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mod</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">module_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dotted_path</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">mod</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_walk_dotted_path</span><span class="p">(</span><span class="n">mod</span><span class="p">,</span> <span class="n">dotted_path</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<span class="k">def</span> <span class="nf">_default_convert_string</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">config</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">s</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">_ISO_DATETIME_PATTERN</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+        <span class="n">gd</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">groupdict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">gd</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">string</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">string</span><span class="p">[:</span><span class="mi">10</span><span class="p">],</span> <span class="n">gd</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">])</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">gd</span><span class="p">[</span><span class="s1">&#39;ms&#39;</span><span class="p">]:</span>
+                <span class="n">ms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">gd</span><span class="p">[</span><span class="s1">&#39;ms&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">microsecond</span><span class="o">=</span><span class="n">ms</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">gd</span><span class="p">[</span><span class="s1">&#39;oh&#39;</span><span class="p">]:</span>
+                <span class="n">oh</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gd</span><span class="p">[</span><span class="s1">&#39;oh&#39;</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
+                <span class="n">om</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gd</span><span class="p">[</span><span class="s1">&#39;om&#39;</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
+                <span class="n">osec</span> <span class="o">=</span> <span class="n">oms</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">gd</span><span class="p">[</span><span class="s1">&#39;os&#39;</span><span class="p">]:</span>
+                        <span class="n">osec</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">gd</span><span class="p">[</span><span class="s1">&#39;os&#39;</span><span class="p">],</span> <span class="mi">10</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">gd</span><span class="p">[</span><span class="s1">&#39;oms&#39;</span><span class="p">]:</span>
+                        <span class="n">oms</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">gd</span><span class="p">[</span><span class="s1">&#39;oms&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">)</span>
+                <span class="n">td</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span>
+                    <span class="n">hours</span><span class="o">=</span><span class="n">oh</span><span class="p">,</span> <span class="n">minutes</span><span class="o">=</span><span class="n">om</span><span class="p">,</span> <span class="n">seconds</span><span class="o">=</span><span class="n">osec</span><span class="p">,</span> <span class="n">microseconds</span><span class="o">=</span><span class="n">oms</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">gd</span><span class="p">[</span><span class="s1">&#39;sign&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span><span class="p">:</span>
+                    <span class="n">td</span> <span class="o">=</span> <span class="o">-</span><span class="n">td</span>
+                <span class="n">tzinfo</span> <span class="o">=</span> <span class="n">timezone</span><span class="p">(</span><span class="n">td</span><span class="p">)</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">tzinfo</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">_ENV_VALUE_PATTERN</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+            <span class="n">key</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">default</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">_COLON_OBJECT_PATTERN</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="n">_resolve_colon_object</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">m</span> <span class="o">=</span> <span class="n">_DOTTED_OBJECT_PATTERN</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+                        <span class="n">result</span> <span class="o">=</span> <span class="n">_resolve_dotted_object</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">m</span> <span class="o">=</span> <span class="n">_INTERPOLATION_PATTERN</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+                            <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+                            <span class="n">cp</span> <span class="o">=</span> <span class="mi">0</span>
+                            <span class="n">failed</span> <span class="o">=</span> <span class="kc">False</span>
+                            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">_INTERPOLATION_PATTERN</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+                                <span class="n">sp</span><span class="p">,</span> <span class="n">ep</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">span</span><span class="p">()</span>
+                                <span class="k">if</span> <span class="n">sp</span> <span class="o">&gt;</span> <span class="n">cp</span><span class="p">:</span>
+                                    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">cp</span><span class="p">:</span><span class="n">sp</span><span class="p">])</span>
+                                <span class="n">path</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+                                <span class="k">try</span><span class="p">:</span>
+                                    <span class="n">v</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="n">path</span><span class="p">]</span>
+
+                                    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_string_for</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+                                    <span class="n">cp</span> <span class="o">=</span> <span class="n">ep</span>
+                                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                                    <span class="n">failed</span> <span class="o">=</span> <span class="kc">True</span>
+                                    <span class="k">break</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="n">failed</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">cp</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+                                    <span class="n">parts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">cp</span><span class="p">:])</span>
+                                <span class="n">result</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+                <span class="k">pass</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+
+<div class="viewcode-block" id="Config"><a class="viewcode-back" href="../config.html#config.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="n">_string_converter</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">_default_convert_string</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream_or_path</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;context&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">include_path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;include_path&#39;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_duplicates</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;no_duplicates&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strict_conversions</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;strict_conversions&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">cache</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;cache&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;path&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rootdir</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rootdir&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_can_close</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="p">{}</span> <span class="k">if</span> <span class="n">cache</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_evaluator</span> <span class="o">=</span> <span class="n">Evaluator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">stream_or_path</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">stream_or_path</span><span class="p">,</span> <span class="n">basestring</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">load_file</span><span class="p">(</span><span class="n">stream_or_path</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;encoding&#39;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">stream_or_path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_wrap_mapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">items</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">ODict</span><span class="p">()</span>
+        <span class="n">seen</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">DictWrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_duplicates</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Duplicate key </span><span class="si">%s</span><span class="s1"> seen at </span><span class="si">%s</span><span class="s1"> &#39;</span> <span class="s1">&#39;(previously at </span><span class="si">%s</span><span class="s1">)&#39;</span> <span class="o">%</span> <span class="p">(</span>
+                        <span class="n">key</span><span class="p">,</span>
+                        <span class="n">k</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+                        <span class="n">seen</span><span class="p">[</span><span class="n">key</span><span class="p">],</span>
+                    <span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="n">seen</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="n">start</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">_get_from_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="c1"># convenience method</span>
+        <span class="n">evaluator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluator</span>
+        <span class="n">evaluator</span><span class="o">.</span><span class="n">refs_seen</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">evaluator</span><span class="o">.</span><span class="n">_get_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Config.convert_string"><a class="viewcode-back" href="../config.html#config.Config.convert_string">[docs]</a>    <span class="k">def</span> <span class="nf">convert_string</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_string_converter</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">result</span> <span class="ow">is</span> <span class="n">s</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">strict_conversions</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Unable to convert string </span><span class="se">\&#39;</span><span class="si">%s</span><span class="se">\&#39;</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+    <span class="k">def</span> <span class="nf">_wrap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">MappingBody</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrap_mapping</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">ListBody</span><span class="p">):</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">ListWrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">o</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="k">def</span> <span class="nf">_evaluated</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_evaluator</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">cached</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">cached</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">cached</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+<div class="viewcode-block" id="Config.get"><a class="viewcode-back" href="../config.html#config.Config.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_unwrap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">default</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="n">cached</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">cached</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">cached</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="n">_unwrap</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+<div class="viewcode-block" id="Config.as_dict"><a class="viewcode-back" href="../config.html#config.Config.as_dict">[docs]</a>    <span class="k">def</span> <span class="nf">as_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">as_dict</span><span class="p">()</span></div>
+
+    <span class="c1"># for compatibility with old code base (and its tests)</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+<div class="viewcode-block" id="Config.load"><a class="viewcode-back" href="../config.html#config.Config.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stream</span> <span class="o">=</span> <span class="n">stream</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span>
+        <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">stream</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">rootdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">rootdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rootdir</span> <span class="o">=</span> <span class="n">rootdir</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">container</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">ParserError</span> <span class="k">as</span> <span class="n">pe</span><span class="p">:</span>
+            <span class="n">cfe</span> <span class="o">=</span> <span class="n">ConfigFormatError</span><span class="p">(</span><span class="o">*</span><span class="n">pe</span><span class="o">.</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">cfe</span><span class="o">.</span><span class="n">location</span> <span class="o">=</span> <span class="n">pe</span><span class="o">.</span><span class="n">location</span>
+            <span class="k">raise</span> <span class="n">cfe</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">MappingBody</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s1">&#39;Root configuration must be a mapping&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrap_mapping</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Config.load_file"><a class="viewcode-back" href="../config.html#config.Config.load_file">[docs]</a>    <span class="k">def</span> <span class="nf">load_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">io</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">encoding</span> <span class="ow">or</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Config.close"><a class="viewcode-back" href="../config.html#config.Config.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_can_close</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stream</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_stream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="fm">__getattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="kn">import</span> <span class="nn">warnings</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Attribute access is deprecated (</span><span class="si">%s</span><span class="s1">); use indexed access instead.&#39;</span> <span class="o">%</span> <span class="n">key</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Event-Assignement</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">src</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Lucas Sautier - Pierre-Louis Le Goff - Nicolas Corvol - Garance Gérard.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

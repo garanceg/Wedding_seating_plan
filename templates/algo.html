@@ -1,0 +1,118 @@
+<script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+
+{% extends 'base.html' %}
+{% block content %}
+
+<div class = "forme">
+    <h1> Principe de fonctionnement de l'algorithme</h1>
+
+    <div style="margin: 40px 100px 40px 100px; text-align: justify; line-height:2; font-family: Arial, Helvetica, sans-serif; font-size: 15px">
+        Pour obtenir un placement des invités à table en fonction de leurs informations, nous avons utilisé la programmation linéaire en nombres entiers, ou \(PLNE\). 
+        L'objectif du \(PLNE\) est de maximiser (ou minimiser) une fonction tout en prenant en compte des contraintes : les variables doivent être
+        entières et les contraintes linéaires. Des solveurs tels que Gurobi permettent de résoudre ces problèmes (nous avons utilisé la bibliothèque gurobipy).
+        Nous avons construit notre \(PLNE\) par difficulté croissante en commençant par prendre en compte seulement la répartition hommes/femmes sur chaque table,
+        puis nous avons ajouté d'autres critères au fur et à mesure afin d'obtenir toutes les contraintes souhaitées.<br><br>
+        Dans le cadre de notre projet, l'objectif était de maximiser le contentement de chaque invité. Nous avons utilisé les critères suivants:
+        
+        <ul>
+            <li>Un invité veut être à la même table que son/sa partenaire.</li>
+            <li>Un invité est content s'il est à table avec une des trois personnes qu'il a indiqué en s'inscrivant.</li>
+        </ul><br>
+
+        Nous avons de plus rajouté des règles indépendantes de contentement des invités mais qui doivent être respectées lors de l'élaboration du plan de table: 
+        <ul>
+            <li>Le nombre d'hommes et de femmes à table doit être représentatif de la proportion hommes/femmes des invités.</li>
+            <li>Il faut qu'il y ait un mélange d'invités venant de la part des deux mariés à chaque table.</li>
+        </ul><br>
+
+        Le \(PLNE\) se traduit alors de la manière suivante : <br>
+
+        On pose \(I\) le nombre d'invités conviés et \(T\) le nombre de tables. \( \forall k \in [T] \) on pose \( T_{k} \) la capacité de la table k, \( p_{k}=\frac{I}{T_{k}} \) une constante de normalisation.<br>
+        Soit \( i \in [I], j \in [I], k \in [T] \), On introduit les 3 variables suivantes: <br>
+
+        <p style="font-size:14px;">\[x_{ik} = \left\{
+            \begin{array}{ll}
+            1 \text{ si l'invite $i$ est a la table $k$} \\
+            0 \text{ sinon}
+            \end{array}
+        \right.\]</p>
+
+        <p style="font-size:14px;">\[y_{ik} = \left\{
+            \begin{array}{ll}
+            1 \text{ si l'invité $i$ et $j$ sont en couple et tous deux à la table $k$} \\
+            0 \text{ sinon}
+            \end{array}
+        \right.\]</p>
+
+        <p style="font-size:14px;">\[z_{ijk} = \left\{
+            \begin{array}{ll}
+            1 \text{ si l'invité $i$ et $j$ sont à la table $k$ et que l'invité $i$ souhaitait être avec $j$ en choix n°$3$} \\
+            2 \text{ si l'invité $i$ et $j$ sont à la table $k$ et que l'invité $i$ souhaitait être avec $j$ en choix n°$2$} \\
+            3 \text{ si l'invité $i$ et $j$ sont à la table $k$ et que l'invité $i$ souhaitait être avec $j$ en choix n°$1$} \\
+            0 \text{ sinon}
+            \end{array}
+        \right.\]</p><br>
+
+        On a alors la fonction objectif suivante, qui vise à contenter le plus d'invités possible : 
+        <p style="text-align: center;">\( \sum\limits_{i=1}^I\sum\limits_{j=1}^I\sum\limits_{k=1}^T(y_{ijk}+z_{ijk}) \)</p>
+
+        On possède de plus quelques informations sur les invités qui apparaissent sous la forme suivante : 
+        Soit \( i \in [I],\  j \in [I] \) :
+
+        <p style="font-size:14px;">\[s_{i} = \left\{
+            \begin{array}{ll}
+            1 \text{ si l'invité $i$ est un homme} \\
+            0 \text{ si l'invité $i$ est une femme}
+            \end{array}
+        \right.\]</p>
+
+        <p style="font-size:14px;">\[f_{i} = \left\{
+            \begin{array}{ll}
+            1 \text{ si l'invité $i$ est invité par un des mariés (le marié n°1)} \\
+            0 \text{ si l'invité $i$ est invité par l'autre marié (le marié n°2)}
+            \end{array}
+        \right.\]</p>
+
+        <p style="font-size:14px;">\[C_{ik} = \left\{
+            \begin{array}{ll}
+            1 \text{ si l'invité $i$ et $j$ sont en couple} \\
+            0 \text{ sinon}
+            \end{array}
+        \right.\]</p>
+
+        <p style="font-size:14px;">\[A_{ij} = \left\{
+            \begin{array}{ll}
+            1 \text{ si l'invité $i$ souhaite être à table avec $j$ avec une préférence de $3$} \\
+            2 \text{ si l'invité $i$ souhaite être à table avec $j$ avec une préférence de $2$} \\
+            3 \text{ si l'invité $i$ souhaite être à table avec $j$ avec une préférence de $1$} \\
+            0 \text{ sinon}
+            \end{array}
+        \right.\]</p><br>
+
+        Les contraintes à respecter sont alors les suivantes : 
+        <ul>
+            <li>(1) et (2) Chaque invité doit être à exactement une table et chaque table dispose d'une certaine capacité:
+                <p style="font-size:14px; text-align: center;">\( \forall i \in [I],\ \sum\limits_{k=1}^T x_{ik} = 1 \text{ et } \forall k \in [T], \  \sum\limits_{i=1}^Ix_{ik} \leq T_{k} \) </p>
+            </li>
+            <li>(3) et (4) Les tables doivent disposer d'une proportion hommes/femmes proche de la proportion hommes/femmes de l'ensemble des invités: 
+                <p style="font-size:14px; text-align: center;">\( \forall k \in [T], \  \sum\limits_{i=1}^Ip_{k}x_{ik}s_{i} \leq p_{k} + \sum\limits_{i=1}^Is_{i} \text{  et  } \sum\limits_{i=1}^Ip_{k}x_{ik}s_{i} \geq -p_{k} + \sum\limits_{i=1}^Is_{i} \)</p>
+            </li>
+            <li>(5) et (6) Les tables doivent disposer d'une proportion d'invités du marié 1/marié 2 proche de la proportion d'invités du marié 1/marié 2 de l'ensemble des invités: 
+                <p style="font-size:14px; text-align: center;">\( \forall k \in [T], \  \sum\limits_{i=1}^Ip_{k}x_{ik}f_{i} \leq p_{k} + \sum\limits_{i=1}^If_{i} \text{ et }  \sum\limits_{i=1}^Ip_{k}x_{ik}f_{i} \geq -p_{k} + \sum\limits_{i=1}^If_{i} \) </p>
+            </li>
+            <li>(7) Les couples doivent être ensemble à table: 
+                <p style="font-size:14px; text-align: center;">\( \forall i \in [I],\  \forall j \in [I], \   \forall k \in [T], \  y_{ijk} \leq \frac{x_{ik}+x_{jk}}{2}C_{ij} \)</p>
+            </li>
+            <li>(8) Les préférences des invités sont satisfaites dans la mesure du possible:
+                <p style="font-size:14px; text-align: center;">\( \forall i \in [I],\  \forall j \in [I], \   \forall k \in [T], \ z_{ijk} \leq \frac{x_{ik}+x_{jk}}{2}A_{ij} \) </p>
+            </li>
+        </ul>
+
+        Ainsi, nous cherchons à résoudre le \(PLNE\) suivant:
+        <p style="font-size:14px; text-align: center;">\( \max_{y, z} \quad  \sum\limits_{i=1}^I\sum\limits_{j=1}^I\sum\limits_{k=1}^T(y_{ijk}+z_{ijk})\\
+            \text{s.c.} \quad (1)-(8)\\ \)</p>
+    </div>
+</div>
+
+{% include 'footer.html' %}
+{% endblock %}

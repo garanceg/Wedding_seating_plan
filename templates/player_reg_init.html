@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<img id="fond_log"  src="{{ url_for('static', filename='fond_guest.jpg') }}">
+
+<div id="login">
+
+    <h1>Invité : S'enregistrer</h1><br>
+    {% for message in messages %}
+        <div class="flash-message">{{ message }}</div>
+        {% set messages = messages[:loop.index] + messages[loop.index+1:] %}
+    {% endfor %}
+
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{form.mariage.label(class="form-label") }} <br>
+            {{ form.mariage(class="form-input") }}<br>
+        </div>
+        
+        <div class="form-group">
+            {{ form.email.label(class="form-label") }}<br>
+            {{ form.email(class="form-input") }}<br>
+        </div><br>
+        {{ form.submit(class='btn btn-primary') }}
+    </form>
+</div>
+
+{% endblock %} 

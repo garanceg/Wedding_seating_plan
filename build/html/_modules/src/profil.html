@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.profil &mdash; Event-Assignement 2023 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Event-Assignement
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Event-Assignement</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.profil</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.profil</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Markup</span>
+<span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">SqliteDatabase</span><span class="p">(</span><span class="s1">&#39;mariage.db&#39;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BaseModel"><a class="viewcode-back" href="../../profil.html#src.profil.BaseModel">[docs]</a><span class="k">class</span> <span class="nc">BaseModel</span><span class="p">(</span><span class="n">Model</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
+        <span class="n">database</span> <span class="o">=</span> <span class="n">db</span> </div>
+
+
+<div class="viewcode-block" id="Orga"><a class="viewcode-back" href="../../profil.html#src.profil.Orga">[docs]</a><span class="k">class</span> <span class="nc">Orga</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Storing infomations about the organizer of a wedding &quot;&quot;&quot;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">AutoField</span><span class="p">()</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">surname</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">mariage</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">groom_name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">groom_surname</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">bride_name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">bride_surname</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="Orga.orga_full_name"><a class="viewcode-back" href="../../profil.html#src.profil.Orga.orga_full_name">[docs]</a>    <span class="k">def</span> <span class="nf">orga_full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the full name of the organizer.</span>
+
+<span class="sd">        :return: The player&#39;s name and surname separated by a space.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">surname</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Orga.groom_full_name"><a class="viewcode-back" href="../../profil.html#src.profil.Orga.groom_full_name">[docs]</a>    <span class="k">def</span> <span class="nf">groom_full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the full name of the groom.</span>
+
+<span class="sd">        :return: the full name of the groom</span>
+<span class="sd">        :rtype: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">groom_name</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">groom_surname</span><span class="p">)</span></div>
+    
+    
+<div class="viewcode-block" id="Orga.bride_full_name"><a class="viewcode-back" href="../../profil.html#src.profil.Orga.bride_full_name">[docs]</a>    <span class="k">def</span> <span class="nf">bride_full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the full name of the bride.</span>
+
+<span class="sd">        :return: the full name of the bride</span>
+<span class="sd">        :rtype: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bride_name</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bride_surname</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Orga.get_orga_mariage"><a class="viewcode-back" href="../../profil.html#src.profil.Orga.get_orga_mariage">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_orga_mariage</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mariage</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the wedding organizer for the given marriage.</span>
+
+<span class="sd">        :param mariage: name of the wedding</span>
+<span class="sd">        :type mariage: char</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">orga</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="n">mariage</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">orga</span></div>
+
+<div class="viewcode-block" id="Orga.get_orga_mail"><a class="viewcode-back" href="../../profil.html#src.profil.Orga.get_orga_mail">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_orga_mail</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mariage</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Get the wedding organizer for the given marriage and email.</span>
+
+<span class="sd">        :param mariage: name of the wedding</span>
+<span class="sd">        :type mariage: char</span>
+<span class="sd">        :param email: email of the organizer</span>
+<span class="sd">        :type email: char</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">orga</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="bp">cls</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="n">mariage</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">email</span> <span class="o">==</span> <span class="n">email</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">orga</span></div></div>
+
+
+<div class="viewcode-block" id="Guest"><a class="viewcode-back" href="../../profil.html#src.profil.Guest">[docs]</a><span class="k">class</span> <span class="nc">Guest</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Storing infomations about a guest of a wedding &quot;&quot;&quot;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">AutoField</span><span class="p">()</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">surname</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">mariage</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Guest.full_name"><a class="viewcode-back" href="../../profil.html#src.profil.Guest.full_name">[docs]</a>    <span class="k">def</span> <span class="nf">full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the full name of the guest.</span>
+
+<span class="sd">        :return: the full name of a wedding guest</span>
+<span class="sd">        :rtype: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">surname</span><span class="p">)</span> </div>
+    
+<div class="viewcode-block" id="Guest.get_guest_mail"><a class="viewcode-back" href="../../profil.html#src.profil.Guest.get_guest_mail">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_guest_mail</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mariage</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Get the corresponding guest for a given marriage and email.</span>
+
+<span class="sd">        :param mariage: name of the wedding</span>
+<span class="sd">        :type mariage: char</span>
+<span class="sd">        :param email: email of the guest</span>
+<span class="sd">        :type email: char</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">guest</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="n">mariage</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">email</span> <span class="o">==</span> <span class="n">email</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">guest</span></div></div>
+
+
+<div class="viewcode-block" id="Player"><a class="viewcode-back" href="../../profil.html#src.profil.Player">[docs]</a><span class="k">class</span> <span class="nc">Player</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Storing infomations about a guest who is coming to the wedding. He is called a player. &quot;&quot;&quot;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">couple_situation</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># 1 if in a couple, 0 otherwise</span>
+    <span class="n">partner_name</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">gender</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="c1"># 1 if man, 0 if woman</span>
+    <span class="n">family</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">mariage</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">favorite_guest_1</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">favorite_guest_2</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">favorite_guest_3</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Player.is_coming"><a class="viewcode-back" href="../../profil.html#src.profil.Player.is_coming">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">is_coming</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ident</span><span class="p">,</span> <span class="n">mar</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check if the player with id ident is coming to the wedding.</span>
+
+<span class="sd">        :param ident: id of the player</span>
+<span class="sd">        :type ident: int</span>
+
+<span class="sd">        :return: 1 if the player is coming, 0 otherwise.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">cls</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                <span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">ident</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="n">mar</span><span class="p">)</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">return</span> <span class="mi">1</span>
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span></div>
+    
+
+<div class="viewcode-block" id="Player.mr_or_miss"><a class="viewcode-back" href="../../profil.html#src.profil.Player.mr_or_miss">[docs]</a>    <span class="k">def</span> <span class="nf">mr_or_miss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the title according to the player&#39;s gender.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: &quot;Monsieur&quot; if the player is male, &quot;Madame&quot; if female</span>
+<span class="sd">        :rtype: str       </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gender</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Madame&quot;</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="s2">&quot;Monsieur&quot;</span></div>
+
+        
+<div class="viewcode-block" id="Player.called_gender"><a class="viewcode-back" href="../../profil.html#src.profil.Player.called_gender">[docs]</a>    <span class="k">def</span> <span class="nf">called_gender</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the called gender according to the player&#39;s gender.</span>
+<span class="sd">        </span>
+<span class="sd">        :return: &quot;Masculin&quot; if the player is male, &quot;Feminin&quot; if female</span>
+<span class="sd">        :rtype: str       </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gender</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Feminin&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Masculin&quot;</span></div>
+
+
+<div class="viewcode-block" id="Player.full_name"><a class="viewcode-back" href="../../profil.html#src.profil.Player.full_name">[docs]</a>    <span class="k">def</span> <span class="nf">full_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the full name of the player.</span>
+
+<span class="sd">        :return: The player&#39;s name and surname separated by a space.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">guest</span> <span class="o">=</span> <span class="n">Guest</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Guest</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">guest</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">guest</span><span class="o">.</span><span class="n">surname</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Player.name_of_partner"><a class="viewcode-back" href="../../profil.html#src.profil.Player.name_of_partner">[docs]</a>    <span class="k">def</span> <span class="nf">name_of_partner</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the full name of the player&#39;s partner.</span>
+
+<span class="sd">        :return: The partner&#39;s name and surname separated by a space. &quot;Pas en couple&quot; if the player is not in a couple.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">couple_situation</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span> 
+                <span class="n">partner</span> <span class="o">=</span> <span class="n">Guest</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Guest</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">partner_name</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;Pas en couple&quot;</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">partner</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">partner</span><span class="o">.</span><span class="n">surname</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="s2">&quot;Pas en couple&quot;</span></div>
+
+    
+<div class="viewcode-block" id="Player.name_of_fav_1"><a class="viewcode-back" href="../../profil.html#src.profil.Player.name_of_fav_1">[docs]</a>    <span class="k">def</span> <span class="nf">name_of_fav_1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the full name of the player&#39;s first favorite guest.</span>
+
+<span class="sd">        :return: The first favorite guest&#39;s name and surname separated by a space. &quot;Pas de personne favorite&quot; if the player does not have a first favorite guest.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">favorite_guest_1</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">fav_1</span> <span class="o">=</span> <span class="n">Guest</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Guest</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">favorite_guest_1</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;Pas de personne favorite&quot;</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">fav_1</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">fav_1</span><span class="o">.</span><span class="n">surname</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="s2">&quot;Pas de personne favorite&quot;</span></div>
+
+
+<div class="viewcode-block" id="Player.name_of_fav_2"><a class="viewcode-back" href="../../profil.html#src.profil.Player.name_of_fav_2">[docs]</a>    <span class="k">def</span> <span class="nf">name_of_fav_2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the full name of the player&#39;s second favorite guest.</span>
+
+<span class="sd">        :return: The second favorite guest&#39;s name and surname separated by a space. &quot;Pas de personne favorite&quot; if the player does not have a second favorite guest.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">favorite_guest_2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">fav_2</span> <span class="o">=</span> <span class="n">Guest</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Guest</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">favorite_guest_2</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;Pas de personne favorite&quot;</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">fav_2</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">fav_2</span><span class="o">.</span><span class="n">surname</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="s2">&quot;Pas de personne favorite&quot;</span></div>
+
+
+<div class="viewcode-block" id="Player.name_of_fav_3"><a class="viewcode-back" href="../../profil.html#src.profil.Player.name_of_fav_3">[docs]</a>    <span class="k">def</span> <span class="nf">name_of_fav_3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the full name of the player&#39;s third favorite guest.</span>
+
+<span class="sd">        :return: The third favorite guest&#39;s name and surname separated by a space. &quot;Pas de personne favorite&quot; if the player does not have a third favorite guest.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">favorite_guest_3</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">fav_3</span> <span class="o">=</span> <span class="n">Guest</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Guest</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">favorite_guest_3</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;Pas de personne favorite&quot;</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">fav_3</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">fav_3</span><span class="o">.</span><span class="n">surname</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="s2">&quot;Pas de personne favorite&quot;</span></div>
+
+    
+<div class="viewcode-block" id="Player.has_a_table"><a class="viewcode-back" href="../../profil.html#src.profil.Player.has_a_table">[docs]</a>    <span class="k">def</span> <span class="nf">has_a_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the player has a table for the wedding.</span>
+
+<span class="sd">        :return: True if the player has a table, False otherwise.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+    
+<div class="viewcode-block" id="Player.same_table"><a class="viewcode-back" href="../../profil.html#src.profil.Player.same_table">[docs]</a>    <span class="k">def</span> <span class="nf">same_table</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ident</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Check if the player is at the same table of the player&#39;s ident given.</span>
+
+<span class="sd">        :return: True if they are at the same table, False otherwise. It returns a message if the player is not valid.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">guest</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">ident</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mariage</span><span class="p">)</span>
+            <span class="p">)</span> 
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="s2">&quot;L&#39;identifiant que vous avez renseigné n&#39;est pas bon, cette personne&quot;</span> <span class="o">+</span>
+                        <span class="s2">&quot;ne figure pas dans la table Player pour ce mariage&quot;</span><span class="p">))</span>
+        
+        <span class="k">return</span> <span class="n">guest</span><span class="o">.</span><span class="n">table</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">table</span></div>
+
+
+<div class="viewcode-block" id="Player.satisfaction"><a class="viewcode-back" href="../../profil.html#src.profil.Player.satisfaction">[docs]</a>    <span class="k">def</span> <span class="nf">satisfaction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the satisfaction score of the player based on their seating arrangements.</span>
+
+<span class="sd">        :return: The satisfaction score of the player.</span>
+<span class="sd">        :rtype: int </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nb_point</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">couple_situation</span> <span class="o">==</span><span class="mi">1</span> <span class="p">:</span> 
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">same_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">partner_name</span><span class="p">):</span>
+                <span class="n">nb_point</span> <span class="o">+=</span> <span class="mi">3</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">favorite_guest_1</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">same_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">favorite_guest_1</span><span class="p">):</span>
+            <span class="n">nb_point</span> <span class="o">+=</span> <span class="mi">3</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">favorite_guest_2</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">same_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">favorite_guest_2</span><span class="p">):</span>
+            <span class="n">nb_point</span> <span class="o">+=</span> <span class="mi">2</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">favorite_guest_1</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">same_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">favorite_guest_3</span><span class="p">):</span>
+            <span class="n">nb_point</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">nb_point</span></div>
+
+    
+<div class="viewcode-block" id="Player.color"><a class="viewcode-back" href="../../profil.html#src.profil.Player.color">[docs]</a>    <span class="k">def</span> <span class="nf">color</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gives the color corresponding to the satisfaction score of the player.</span>
+<span class="sd">        &quot;&quot;&quot;</span>        
+
+        <span class="n">very_good</span> <span class="o">=</span> <span class="s2">&quot;green&quot;</span>
+        <span class="n">good</span> <span class="o">=</span> <span class="s2">&quot;orange&quot;</span>
+        <span class="n">not_good</span> <span class="o">=</span> <span class="s2">&quot;red&quot;</span>
+
+        <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">satisfaction</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s1">&#39;&lt;span style=&quot;background-color: </span><span class="si">{}</span><span class="s1">&quot;&gt;</span><span class="si">{}</span><span class="s1">&lt;/span&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">very_good</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_name</span><span class="p">()))</span>
+        <span class="k">elif</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">satisfaction</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s1">&#39;&lt;span style=&quot;background-color: </span><span class="si">{}</span><span class="s1">&quot;&gt;</span><span class="si">{}</span><span class="s1">&lt;/span&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">good</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_name</span><span class="p">()))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">Markup</span><span class="p">(</span><span class="s1">&#39;&lt;span style=&quot;background-color: </span><span class="si">{}</span><span class="s1">&quot;&gt;</span><span class="si">{}</span><span class="s1">&lt;/span&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">not_good</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">full_name</span><span class="p">()))</span></div>
+
+
+<div class="viewcode-block" id="Player.get_player_mail"><a class="viewcode-back" href="../../profil.html#src.profil.Player.get_player_mail">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_player_mail</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mariage</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Get the corresponding player for a given wedding and a given email.</span>
+
+<span class="sd">        :param mariage: wedding name </span>
+<span class="sd">        :type id: str</span>
+<span class="sd">        :param email: player&#39;s mail </span>
+<span class="sd">        :type id: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">player</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="bp">cls</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="n">mariage</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">email</span><span class="o">==</span><span class="n">email</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">player</span></div>
+
+
+<div class="viewcode-block" id="Player.get_player_id"><a class="viewcode-back" href="../../profil.html#src.profil.Player.get_player_id">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_player_id</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">ident</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">        Get the corresponding player for a given id.</span>
+
+<span class="sd">        :param id: player&#39;s id</span>
+<span class="sd">        :type id: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">player</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">ident</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">player</span></div>
+
+    
+<div class="viewcode-block" id="Player.number_of_player"><a class="viewcode-back" href="../../profil.html#src.profil.Player.number_of_player">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">number_of_player</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mariage</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="n">mariage</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Tables"><a class="viewcode-back" href="../../profil.html#src.profil.Tables">[docs]</a><span class="k">class</span> <span class="nc">Tables</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Storing infomations about the wedding&#39;s tables. &quot;&quot;&quot;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">AutoField</span><span class="p">()</span>
+    <span class="n">mariage</span> <span class="o">=</span> <span class="n">CharField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">capacity</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="n">number</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="n">null</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Tables.get_table_capa"><a class="viewcode-back" href="../../profil.html#src.profil.Tables.get_table_capa">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_table_capa</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mariage</span><span class="p">,</span> <span class="n">capacity</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span> 
+            <span class="n">table</span> <span class="o">=</span> <span class="n">Tables</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">Tables</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="n">mariage</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Tables</span><span class="o">.</span><span class="n">capacity</span> <span class="o">==</span> <span class="n">capacity</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">table</span></div>
+        
+
+<div class="viewcode-block" id="Tables.is_empty"><a class="viewcode-back" href="../../profil.html#src.profil.Tables.is_empty">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">is_empty</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">mariage</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="n">mariage</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div></div>
+
+
+<span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Lucas Sautier - Pierre-Louis Le Goff - Nicolas Corvol - Garance Gérard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

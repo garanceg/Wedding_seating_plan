@@ -1,0 +1,7 @@
+rooting module
+==============
+
+.. automodule:: rooting
+   :members:
+   :undoc-members:
+   :show-inheritance:

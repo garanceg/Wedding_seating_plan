@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<img id ="fond_guest_list_table" src="{{ url_for('static', filename='fond_guest_list_table.jpg') }}" >
+<div class="forme">
+
+  <h2> Renseignez votre liste d'invités et votre composition de tables pour la réception</h2><br><br>
+
+  {% for message in messages %}
+      <div class="flash-message">{{ message }}</div>
+      {% set messages = messages[:loop.index] + messages[loop.index+1:] %}
+  {% endfor %}
+  
+  Vous pouvez renseigner à l'aide d'un fichier excel la liste complète de vos invités sous la forme : 
+  <div class="center">
+    <table>
+        <tr>
+          <th>Prénom / </th>
+          <th> Nom / </th>
+          <th> Adresse Email</th>
+        </tr>
+    </table>
+  </div><br>
+
+  Vous trouverez un exemple à remplir <a href="{{ url_for('download', filename='template_guest_list.xlsx', ident=ident, mariage=mariage, statut=statut) }}">ici</a><br><br>
+
+  <form method='POST' enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    {{ form.file_guest.label(class="form-label") }}
+    {{ form.file_guest(class="form-input2") }} 
+    <br><br><br><br>
+
+  Vous pouvez renseigner toujours à l'aide d'un fichier excel les informations sur les tables sous la forme : 
+  <div class="center">
+    <table>
+        <tr>
+          <th>Capacité de la table / </th>
+          <th> Nombre de tables avec cette capacité</th>
+        </tr>
+    </table>
+  </div><br>
+
+  Vous trouverez un exemple à remplir <a href="{{ url_for('download', filename='template_table.xlsx', ident=ident, mariage=mariage, statut=statut) }}">ici</a>
+  <br><br>
+  <form method='POST' enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    
+    {{ form.file_tables.label(class="form-label") }}
+    {{ form.file_tables(class="form-input2") }}    
+    <br><br><br>
+    {{ form.submit(class="btn btn-primary") }}
+  </form>
+</div>
+
+{% include 'footer.html' %}
+{% endblock %} 

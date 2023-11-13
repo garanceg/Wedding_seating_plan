@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<img id="fond_log" src="{{ url_for('static', filename='fond_orga.jpeg') }}">
+
+<div id="login">
+    <h1>Organisateur : S'identifier</h1><br>
+
+    {% for message in messages %}
+        <div class="flash-message">{{ message }}<br><br></div>
+        {% set messages = messages[:loop.index] + messages[loop.index+1:] %}
+    {% endfor %}
+
+    <div class="content_login">
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            
+            <div class="form-group">
+                {{form.mariage.label(class="form-label") }}
+                {{ form.mariage(class="form-input") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-input") }}    
+                {% for error in form.email.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.password.label(class="form-label")}}
+                {{ form.password(class="form-input") }}
+                {% for error in form.password.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        </div><br>
+        {{ form.submit(class='btn btn-primary') }}<br><br>
+        Pas encore de compte ? En créer un ?  <a href=" {{ url_for('orga.orga_reg') }} ">S'inscrire</a><br>
+        <a href=" {{ url_for('password_forgotten', status='orga') }} ">Mot de passe oublié</a><br><br>
+    </form>
+</div>
+
+{% endblock %}

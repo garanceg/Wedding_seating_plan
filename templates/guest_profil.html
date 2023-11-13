@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<img id ="fond_guest_list_table" src="{{ url_for('static', filename='fond_guest_list_table.jpg') }}" >
+
+<div class="forme">
+
+    {% if statut == 'guest' %}
+        <h2> Fiche personnelle contenant l'ensemble des informations que vous avez renseignées :</h2>
+
+    {% else %}
+        <h2> Fiche personnelle de {{ appelle }} {{ name }} {{ surname }} </h2>
+  
+    {% endif %}
+
+    {% for message in messages %}
+        <div class="flash-message">{{ message }}</div>
+        {% set messages = messages[:loop.index] + messages[loop.index+1:] %}
+    {% endfor %}<br><br>
+
+    Prénom : {{name}}<br>
+    Nom : {{surname}}<br>
+    Age : {{age}}<br>
+    Genre : {{gender}}<br>
+    Situation amoureuse :
+    {% if couple_situation == 1 %}
+        En couple avec : {{ name_of_partner }}
+    {% else %}
+        Célibataire
+    {% endif %}<br><br>
+    Viens de la part de : {{ coming_for }}<br><br>
+    Préfère être à côté de : <br>
+    1. {{ fav_1 }} <br>
+    2. {{ fav_2 }} <br>
+    3. {{ fav_3 }} <br><br>
+
+    <ol>
+        {% if a_une_table %}
+            Est à la table n° {{table}}<br>
+            Vous pouvez également consulter les autres convives de cette table en cliquant
+            <a href="{{ url_for('guest.table_indiv', ident=ident, guest_ident=guest_ident, mariage=mariage, table=table, statut=statut) }} ">ici</a>.
+        {% else %}
+            Aucune table n'a pour le moment été désignée. Revenez très prochainement pour consulter la composition de votre table !<br>
+        {% endif %}
+    </ol><br>
+    <ol>
+        {% if statut == 'guest' %}
+            Vous pouvez modifier vos informations en cliquant <a href="{{ url_for('guest.guest_change_info', statut=statut,  mariage=mariage, ident=guest_ident) }} ">ici</a>.<br>
+            Vous pouvez également modifier votre mot de passe en cliquant <a href="{{ url_for('change_password', statut=statut,  mariage=mariage, ident=guest_ident) }} ">ici</a>.
+        {% endif %}<br><br><br>
+    </ol>
+</div>
+{% include 'footer.html' %}
+{% endblock %}
+

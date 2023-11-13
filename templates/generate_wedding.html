@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<img id ="fond_guest_list_table" src="{{ url_for('static', filename='fond_guest_list_table.jpg') }}" >
+
+<div class="forme">
+    <h1> Générer un mariage aléatoire et tester notre algoriothme ! </h1><br><br>
+
+    {% if is_generated %}
+        Bravo ! Vous avez créé votre mariage {{mariage_name}}. Celui-ci contient {{nb_guest}} invités et {{nb_couple}} couples. Vous pouvez en recréer un si vous le souhaitez.<br>
+        Pour observer ce que les invités doivent renseigner lorsqu'ils s'inscrivent, nous avons sélectionné un invité qui n'a pas encore rentré ses informations.<br><br>
+        Son mail est : {{ email_player }}<br>
+        Attention : vous devez d'abord vous enregistrer en tant qu'organisateur pour ce mariage dans l'onglet correspondant avant de pouvoir 
+        enregistrer cet invité. Vous devez de plus préciser que cet invité N'EST PAS en couple.<br><br><br>
+
+        Recréer un mariage : 
+
+        {% for message in messages %}
+            <div class="flash-message">{{ message }}</div><br>
+            {% set messages = messages[:loop.index] + messages[loop.index+1:] %}
+        {% endfor %}
+    
+        <div>
+            <form action="" method="post">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{form.name.label(class="form-label") }}
+                    {{ form.name(class="form-input") }}
+                </div>
+
+                <div class="form-group">
+                    {{form.nb_guest.label(class="form-label") }}
+                    {{ form.nb_guest(class="form-input") }}
+                </div>
+
+                <div class="form-group">
+                    {{form.nb_couple.label(class="form-label") }}
+                    {{ form.nb_couple(class="form-input") }}
+                </div><br><br>
+                {{ form.submit(class='btn btn-primary') }}
+            </form>
+        </div>
+      
+    {% else %}
+
+        Bonjour, si vous souhaitez tester notre site internet et son algorithme par pure curiosité mais que vous n'organisez pas vraiment un mariage, 
+        c'est possible !<br>
+        Choisissez les caractéristiques du mariage que vous voulez générer : <br><br>
+
+        {% for message in messages %}
+            <div class="flash-message">{{ message }}</div><br>
+            {% set messages = messages[:loop.index] + messages[loop.index+1:] %}
+        {% endfor %}
+    
+        <div>
+            <form action="" method="post">
+                {{ form.hidden_tag() }} 
+                <div class="form-group">
+                    {{form.name.label(class="form-label") }}
+                    {{ form.name(class="form-input") }}
+                </div>
+
+                <div class="form-group">
+                    {{form.nb_guest.label(class="form-label") }}
+                    {{ form.nb_guest(class="form-input") }}
+                </div>
+
+                <div class="form-group">
+                    {{form.nb_couple.label(class="form-label") }}
+                    {{ form.nb_couple(class="form-input") }}
+                </div><br><br>
+                {{ form.submit(class='btn btn-primary') }}
+            </form>
+        </div>
+
+    {% endif %}
+</div>
+{% include 'footer.html' %}
+{% endblock %}

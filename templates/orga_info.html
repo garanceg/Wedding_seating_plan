@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<img id ="fond_info" src="{{ url_for('static', filename='fond_info.jpg') }}" >
+
+{% for message in messages %}
+    <div class="flash-message">{{ message }}</div>
+    {% set messages = messages[:loop.index] + messages[loop.index+1:] %}
+{% endfor %}
+
+<div id="register">
+    <h3 style="color: #000000; text-align: center;"> Vos informations pour le mariage de {{groom_full_name }} et {{ bride_full_name}} :</h3>
+    <div style="text-align: left; padding:50px;">
+        Prénom : {{name}}<br>
+        Nom : {{surname}}<br>
+        Nom du mariage : {{mariage}}<br><br>
+        Nom du marié : {{groom_full_name}}<br>
+        Nom de la marié : {{bride_full_name}}
+    </div>
+
+    Information sur les tables de la réception : 
+    {% if table_capa_nb == [] %}
+        Vous n'avez pas encore renseigné les informations nécessaires, cliquez sur le lien suivant pour le faire : 
+        <a href=" {{ url_for('add_guest', mariage=mariage, statut='orga', ident=ident) }} ">Ajouter des invités</a>
+    {% else %}
+    <div class="center">
+        <table>
+            <tr>
+            <th>Capacité |</th>
+            <th>Nombre</th>
+            </tr>
+            <ol>
+                {% for i in range(nb_table_diff) %}
+                <tr>
+                    <td>{{table_capa_nb[i][0]}}</td>
+                    <td>{{table_capa_nb[i][1]}}</td>
+                {% endfor %}
+            </ol>
+        </table>
+    </div>
+
+    {% endif %}
+    <br><br>
+    Pour consulter la liste de vos invités, cliquez <a href=" {{ url_for('orga.guest_list', mariage=mariage, statut='orga', ident=ident) }} "> ici</a>.<br><br>    
+    Vous pouvez modifier vos informations en cliquant <a href=" {{ url_for('orga.orga_change_info', mariage=mariage, statut='orga', ident=ident) }} "> ici</a>.<br><br>
+    Vous pouvez modifier votre mot de passe en cliquant <a href=" {{ url_for('change_password', mariage=mariage, statut='orga', ident=ident) }} "> ici</a>.
+</div>
+
+
+{% endblock %}  

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<img id ="fond_guest_list_table" src="{{ url_for('static', filename='fond_guest_list_table.jpg') }}" >
+
+<div class="forme">
+    <h1> Choisissez un nombre de tables pour votre mariage </h1><br><br>
+    <div>
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.table_capacity_number.label(class="form-label") }}
+                {{ form.table_capacity_number(class="form-input") }}       
+            </div><br>
+            {{ form.submit(class='btn btn-primary') }}     
+        </form>
+    </div>
+</div>
+
+{% include 'footer.html' %}
+{% endblock %}

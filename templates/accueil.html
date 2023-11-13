@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<img id="fond" src="{{ url_for('static', filename='fond_accueil.jpg') }}" >
+
+<div id='titre'>Bonjour et bienvenue sur MariageSeating&Co</div><br><br>
+
+{% if log %}
+    {% if statut == 'guest' %}
+        <div id="content">
+            Bonjour {{ full_name }} et bienvenue sur votre espace personnel du mariage {{mariage}}.<br><br>
+            Vous trouverez ici toutes les informations concernant le mariage de {{ groom_full_name }} et {{ bride_full_name }} dont vous aurez besoin.<br>
+            Vous pourrez ainsi consulter vos informations ainsi que la répartition de votre table pour la réception (dès que celui-ci aura été fait). <br>
+            Vous pouvez également profiter pleinement de l'expérience du site en vous référant aux différentes pages qui le composent ! <br> Bonne visite !<br><br>
+            Nous sommes une équipe de quatre ingénieurs des Ponts qui avons travaillé sur ce sujet dans le cadre d'un projet informatique proposé par l'Ecole des Ponts. 
+            Notre but a été de mêler informatique et recherche opérationnelle en créant un algorithme qui à partir de quelques informations concernant vos invités, vous permet d'obtenir un plan de table intelligent dans lequel tout le monde sera le plus content possible.<br><br>
+        </div>
+
+    {% else %}    
+        <div id="content">
+            Bonjour {{ full_name }} et bienvenue sur votre espace personnel d'organisateur du mariage {{mariage}}.<br><br>
+            Vous trouverez ici toutes les informations concernant le mariage de {{ groom_full_name }} et {{ bride_full_name }} dont vous aurez besoin.<br>
+            Vous pourrez également profiter des fonctionnalités du site dès lors que vous aurez renseigné les informations nécessaires, à savoir la liste de 
+            vos invités ainsi que la composition des tables pour la réception. Vous pourrez également transmettre l'invitation à l'ensemble de vos invités en quelques clics ! <br><br>
+            Enfin, la grande nouveauté ici est de pouvoir avoir accès à un algorithme de recherche opérationnelle qui vous permet de générer automatiquement 
+            et intelligemment un plan de table pour le mariage, tout cela basé sur les informations renseignées par vos invités ! Bonne visite !<br><br>
+            Nous sommes une équipe de quatre ingénieurs des Ponts qui avons travaillé sur ce sujet dans le cadre d'un projet informatique proposé par l'Ecole des Ponts. 
+            Notre but a été de mêler informatique et recherche opérationnelle en créeant un algorithme qui à partir de quelques informations concernant vos invités, vous permet d'obtenir un plan de table intelligent dans lequel tout le monde sera le plus content possible.<br><br>
+        </div>
+
+    {% endif %}
+
+{% else %}
+
+    <div id="content">
+        Bonjour et bienvenue sur MariageSeating&Co, le premier site de plan de table de mariage intelligent au monde.<br><br>
+
+        {% for message in messages %}
+            <div class="flash-message">{{ message }}</div>
+            {% set messages = messages[:loop.index] + messages[loop.index+1:] %}
+        {% endfor %}<br>
+
+        Nous sommes une équipe de quatre ingénieurs des Ponts qui avons travaillé sur ce sujet dans le cadre d'un projet informatique proposé par l'Ecole des Ponts. 
+        Notre but a été de mêler informatique et recherche opérationnelle en créeant un algorithme qui à partir de quelques informations concernant vos invités, vous permet d'obtenir un plan de table intelligent dans lequel tout le monde sera le plus content possible. <br><br>
+        Si vous souhaitez en appendre un peu plus sur le fonctionnement de l'algorithme, n'hésitez pas à parcourir notre site !
+    </div>
+
+{% endif %}
+
+{% include 'footer.html' %}
+{% endblock %}

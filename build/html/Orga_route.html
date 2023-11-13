@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orga_route module &mdash; Event-Assignement 2023 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="RO module" href="RO.html" />
+    <link rel="prev" title="Guest_route module" href="Guest_route.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Event-Assignement
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Guest_route.html">Guest_route module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Orga_route module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RO.html">RO module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create_wed.html">create_wed module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="form.html">form module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="profil.html">profil module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="send_email.html">send_email module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Event-Assignement</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">src</a></li>
+      <li class="breadcrumb-item active">Orga_route module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Orga_route.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.Orga_route">
+<span id="orga-route-module"></span><h1>Orga_route module<a class="headerlink" href="#module-src.Orga_route" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Orga_route.guest_list">
+<span class="sig-prename descclassname"><span class="pre">src.Orga_route.</span></span><span class="sig-name descname"><span class="pre">guest_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mariage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ident</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/Orga_route.html#guest_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Orga_route.guest_list" title="Permalink to this definition"></a></dt>
+<dd><p>The function ‘guest_list’ handles the back-end of ‘orga_guest_list’ page, meaning the page where an organizer can see the list of the Guests for his wedding. The organizer can also see the answer of the Gest and their informations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>statut</strong> (<em>str</em>) – statut of the user</p></li>
+<li><p><strong>mariage</strong> (<em>str</em>) – name of the mariage of the guest accessing to its personal profile</p></li>
+<li><p><strong>ident</strong> (<em>int</em>) – id of the user</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Orga_route.log_orga">
+<span class="sig-prename descclassname"><span class="pre">src.Orga_route.</span></span><span class="sig-name descname"><span class="pre">log_orga</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/Orga_route.html#log_orga"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Orga_route.log_orga" title="Permalink to this definition"></a></dt>
+<dd><p>This function ‘log_orga’ handles the back-end of ‘orga_log.html’ page. If a user fills correct informations,
+an email that is in the Database and the correct password, then he can go to the Page de Garde for the organizers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Log Orga page or Page de Garde page</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>template</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Orga_route.orga_change_info">
+<span class="sig-prename descclassname"><span class="pre">src.Orga_route.</span></span><span class="sig-name descname"><span class="pre">orga_change_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mariage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ident</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/Orga_route.html#orga_change_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Orga_route.orga_change_info" title="Permalink to this definition"></a></dt>
+<dd><p>The function ‘orga_info’ handles the back-end of ‘orga_info.html’ page, meaning the page where an organizer can
+see the informations of his wedding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>statut</strong> (<em>str</em>) – statut of the user</p></li>
+<li><p><strong>mariage</strong> (<em>str</em>) – name of the mariage of the guest accessing to its personal profile</p></li>
+<li><p><strong>ident</strong> (<em>int</em>) – id of the user</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Orga_route.orga_info">
+<span class="sig-prename descclassname"><span class="pre">src.Orga_route.</span></span><span class="sig-name descname"><span class="pre">orga_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mariage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ident</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/Orga_route.html#orga_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Orga_route.orga_info" title="Permalink to this definition"></a></dt>
+<dd><p>The function ‘orga_info’ handles the back-end of ‘orga_info.html’ page, meaning the page where an organizer can see
+the informations of his wedding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>statut</strong> (<em>str</em>) – statut of the user</p></li>
+<li><p><strong>mariage</strong> (<em>str</em>) – name of the mariage of the guest accessing to its personal profile</p></li>
+<li><p><strong>ident</strong> (<em>int</em>) – id of the user</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Orga_route.orga_login_required_id">
+<span class="sig-prename descclassname"><span class="pre">src.Orga_route.</span></span><span class="sig-name descname"><span class="pre">orga_login_required_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ident</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/Orga_route.html#orga_login_required_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Orga_route.orga_login_required_id" title="Permalink to this definition"></a></dt>
+<dd><p>This wrap function restrain certain pages only to user that are connected as organizers</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ident</strong> (<em>int</em>) – id of the user</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Orga_route.orga_reg">
+<span class="sig-prename descclassname"><span class="pre">src.Orga_route.</span></span><span class="sig-name descname"><span class="pre">orga_reg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/Orga_route.html#orga_reg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Orga_route.orga_reg" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>This function ‘orga_reg’ handles the back-end of ‘orga_register.html’ page, meaning the page where a user</dt><dd><p>can register himself. If a user fills correct informations asked by the form, then he can go to the Page de Garde
+for organizers.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Orga Register page or Page de Garde page</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>template</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Orga_route.seating_plan">
+<span class="sig-prename descclassname"><span class="pre">src.Orga_route.</span></span><span class="sig-name descname"><span class="pre">seating_plan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mariage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ident</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/Orga_route.html#seating_plan"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Orga_route.seating_plan" title="Permalink to this definition"></a></dt>
+<dd><p>The function ‘seating’ handles the back-end of ‘orga_table_assigment.html’ page, meaning the page where
+an organizer can see the seating plan. The organizer has the opportunity to exchange people on the seating plan.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>statut</strong> (<em>str</em>) – statut of the user</p></li>
+<li><p><strong>mariage</strong> (<em>str</em>) – name of the mariage of the guest accessing to its personal profile</p></li>
+<li><p><strong>ident</strong> (<em>int</em>) – id of the user</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Orga_route.send_email">
+<span class="sig-prename descclassname"><span class="pre">src.Orga_route.</span></span><span class="sig-name descname"><span class="pre">send_email</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mariage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ident</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/Orga_route.html#send_email"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Orga_route.send_email" title="Permalink to this definition"></a></dt>
+<dd><p>The function ‘send_email’ handles the back-end of ‘orga_send_email.html’ page, meaning the page where an organizer can send the invitation of his wedding to the Guests. The organizer has the opportunity to write the subject and the body of the email.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>statut</strong> – </p></li>
+<li><p><strong>mariage</strong> (<em>StringField</em>) – The mariage to wconcerned by the inv</p></li>
+<li><p><strong>ident</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Guest_route.html" class="btn btn-neutral float-left" title="Guest_route module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="RO.html" class="btn btn-neutral float-right" title="RO module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Lucas Sautier - Pierre-Louis Le Goff - Nicolas Corvol - Garance Gérard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

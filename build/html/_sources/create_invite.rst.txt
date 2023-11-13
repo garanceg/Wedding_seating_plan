@@ -1,0 +1,7 @@
+create\_invite module
+=====================
+
+.. automodule:: create_invite
+   :members:
+   :undoc-members:
+   :show-inheritance:

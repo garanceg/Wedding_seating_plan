@@ -1,0 +1,370 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #dfcece;
+    overflow-x: hidden;
+    overscroll-behavior: none;
+    font-family: "Dancing Script";
+    text-align: center;
+    font-size: 20px;
+}
+
+h1 {
+    position:relative;
+    top:15%;
+    }
+
+#fond {
+    height: 100vh;
+    width: 100vw;
+    z-index: -1;
+}
+
+#logo {
+    z-index: 30;
+    top: 2%;
+    left: 2%;
+    height: 30px;
+    display: block;
+    position: fixed;
+}
+
+#titre {
+    top: 10%;
+    font-family: "Alex Brush";
+    color: white;
+    text-align: center;
+    font-size: 80px;
+    position: absolute;
+    margin-top: 10%;
+    font-weight: 1000;
+    text-shadow: 2px 2px 3px black;
+    left: 50%;
+    transform: translate(-50%, 0%);
+
+}
+
+#content {
+    margin-top: 20px;
+    margin-bottom: 100px;
+    margin-left: 120px;
+    margin-right: 120px;
+    line-height: 1.8;
+}
+
+#contactus {
+    border-radius: 30px;
+    background-color: rgb(60, 60, 60);
+    top: 12%;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    padding: 20px 20px 20px 20px;
+    color:rgb(255, 255, 255);
+}
+
+.forme {
+    position: relative;
+    top: 50px;
+    margin-bottom: 30px;
+    width: 1000px;
+    padding: 30px 30px 30px 30px;
+    left: 50%;
+    transform: translate(-50%, 0%);
+}
+
+p {
+    margin-top: 20px;
+    margin-bottom: 30px;
+    margin-left: 120px;
+    margin-right: 120px;
+    line-height: 1.8;
+    font-size: 18px;
+}
+
+nav ul {
+    top: 0;
+    left: 0;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    background-color: #010101;
+    height: 10%; 
+    position: fixed; 
+    overflow: hidden; 
+    z-index: 20;
+}
+
+nav li {
+    display: inline-block;
+}
+
+nav li a {
+    display: block;
+    color: white;
+    text-align: center;
+    font-family: "Alex Brush";
+    font-size: 25px;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+nav li a:hover {
+    background-color: rgb(29, 29, 29);
+}
+
+
+.submenu {
+    position: relative;
+    display: inline-block;
+}
+
+.submenu:hover .subnav {
+    display: block;
+}
+
+.subnav {
+    display: none;
+    min-width: 200px;
+}
+
+.log_in_out {
+    z-index : 20;
+    top: 1%;
+    right : 2%;
+    height : 30px; 
+    width: 150px;
+    display: block;
+    position: fixed;
+    background-color: #eadce1;
+    border: 4px double #000000;
+    text-align: center;
+    font-size: 10px;
+    padding: 2px;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 2px;
+}
+
+.log_in_out:hover .subnav {
+    display: block;
+}
+
+.log_in_out > a{
+    height:30px;
+    padding:0px;
+    color:#000000;
+}
+
+.log_in_out > a:hover {
+background-color: rgb(193, 187, 187);
+}
+
+.imgaboutus {
+    margin: 20px 30px 20px 30px;
+    border-radius: 50%;
+    width: 150px;
+    border: 4px ridge;
+}
+
+.floating-box {
+    display: inline-block;
+    width: 170px;
+    height: auto;
+    margin: 20px;
+    padding : 3px;
+    border: 6px double #000000;  
+    font-size: 18px;
+    margin-bottom: 100px;
+    text-align: center;
+}
+
+.info {
+    display: inline-block;
+    width: 170px;
+    height: auto;
+    margin: 5px;
+    padding : 3px;
+    border: 6px double #000000;  
+    font-size: 18px;
+    text-align: left;
+    background-color: #ffffff;
+    padding: 20px 20px 20px 20px;
+}
+
+#login {
+    background: #dfcece;
+    font-family: "Dancing Script";
+    text-align: center;
+    font-size: 20px;
+    height: auto;
+    width: 320px;
+    z-index: 2;
+    top: 50%;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -45%);
+    border-radius: 30px;
+    padding: 20px 20px 20px 20px;
+    
+}
+
+#register {
+    background: #dfcece;
+    font-family: "Dancing Script";
+    text-align: center;
+    font-size: 20px;
+    height: auto;
+    width: 400px;
+    width: 400px;
+    z-index: 2;
+    top: 10%;
+    position: absolute;
+    margin-top: 5%;
+    left: 50%;
+    transform: translate(-50%, -5%);
+    padding: 20px 20px 20px 20px;
+    border-radius: 30px;
+}
+
+
+.center {
+    text-align: center;
+    left: 38%;
+}
+
+input[type=submit]{
+    background: #ffffff;
+    font-family: "Dancing Script";
+    font-size: 18px;
+    color: rgb(0, 0, 0);
+    border-style: outset;
+    border-color: #cec7c7;
+    height: 30px;
+    width: auto;
+    text-shadow:none;
+    padding: 5px 5px 5px 5px;
+    border-radius: 10px;
+}
+
+input[type=submit]:hover{
+    background-color: rgb(196, 196, 196);
+}
+
+.form-input {
+    background: #ffffff;
+    font-family: "Arial";
+    color: rgb(0, 0, 0);
+    border-color: #cec7c7;
+    border-radius: 5px;
+}
+
+#basdepage a {
+    display: block;
+    color: rgb(0, 0, 0);
+    text-align: center;
+    font-family: "Dancing Script";
+    font-size: 20px;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+#basdepage a:hover {
+    background-color: #dfcece;
+}
+
+footer {
+    font-family: "Dancing script";
+    bottom: 0;
+}
+
+footer li {
+    display: inline-block;
+}
+
+.flash-message {
+    color: red;
+}
+
+
+#fond_table {
+    top: 10%;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    position: fixed;
+    filter: opacity(30%) brightness(0.4);
+}
+
+#fond_guest_list_table {
+    top: 10%;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    z-index: -1;
+    position: fixed;
+    filter: opacity(20%) brightness(0.6);
+    
+}
+
+#fond_log {
+    top: 10%;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    position: fixed;
+}
+
+#fond_info {
+    top: 10%;
+    width: 100vw;
+    left: 0;
+    z-index: -1;
+    position: fixed;
+    filter: opacity(60%) brightness(0.5);
+    
+}
+
+#fond_send_email {
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 10%;
+    z-index: -1;
+    left: 0;
+    position: fixed;
+    filter: brightness(0.25);
+}
+
+
+textarea {
+    width: 400px;
+    height: 200px;
+}
+
+table {
+    margin: auto;
+    line-height: 1.8;
+}
+
+td {
+    text-align: center;
+}
+
+
+.content_login {
+    text-align: right; 
+    padding: 3px 40px 3px 3px;
+}
+  
+  
+ 

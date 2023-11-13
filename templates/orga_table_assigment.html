@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<img id ="fond_table" src="{{ url_for('static', filename='fond_table_assignment.png') }}">
+
+<div class="forme">
+
+    {% if seating_plan_bool  %}
+        
+    <h1> Voici le plan de table ! </h1><br>
+
+    <div>
+        Le code couleur est le suivant :<br> 
+        <div style="text-align: left; margin-left: 42%;">
+            <span style="background-color: green">Vert</span> : 3 points ou plus <br>
+            <span style="background-color: orange">Orange</span> : Entre 1 et 3 points <br>
+            <span style="background-color: red">Rouge</span> : 0 point <br>
+        </div><br>
+        Affectation des points :<br>
+        - Être avec son conjoint à table : 3 points <br>
+        - Être avec son choix d'invité n°1 à table : 3 points <br>
+        - Être avec son choix d'invité n°2 à table : 2 points <br>
+        - Être avec son choix d'invité n°3 à table : 1 point <br>
+
+        {% for message in messages %}
+            <div class="flash-message"> <br>{{ message }}</div>
+            {% set messages = messages[:loop.index] + messages[loop.index+1:] %}
+        {% endfor %}<br>
+
+        Vous pouvez télécharger votre plan de table en cliquant <a href="{{ url_for('download_seating_plan', ident=ident, mariage=mariage, statut=statut) }}">ici</a><br><br>
+        Il y a {{ nb_couple_side_by_side }} couples côte à côte sur {{ nb_couple }}. <br>
+        Il y a {{nb_people_side_fav[0]}} personnes à la table de leur premier choix. <br>
+        Il y a {{nb_people_side_fav[1]}} personnes à la table de leur deuxième choix.<br>
+        Il y a {{nb_people_side_fav[2]}} personnes à la table de leur troisième choix.<br><br>
+        Si vous n'êtes pas satisfait du plan de table, vous pouvez échanger deux personnes de tables : <br>
+        
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{form.player_1.label(class="form-label") }}
+                {{ form.player_1(class="form-input") }}
+            </div>
+
+            <div class="form-group">
+                {{form.player_2.label(class="form-label") }}
+                {{ form.player_2(class="form-input") }}
+            </div><br>
+
+            {{ form.submit(class='btn btn-primary') }}<br><br>
+        </form>
+        <ol>
+            {% for i in range(nb_table) %}
+            <div class="floating-box">
+                <h2> Table {{i}} </h2><br>
+                {% for j in range(nb_guest) %}
+                    {% if table_assignement[j][1] == i %}
+                        {{table_assignement[j][0]}}<br>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </ol>
+    </div>
+    {% else %}
+    
+    Pas encore de plan de table généré pour ce mariage
+    
+    {% endif %}
+</div>
+
+{% include 'footer.html' %}
+{% endblock %}

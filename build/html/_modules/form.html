@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>form &mdash; Event-Assignement 2023 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Event-Assignement
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Event-Assignement</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">form</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for form</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="n">DoesNotExist</span>
+<span class="kn">from</span> <span class="nn">flask_wtf</span> <span class="kn">import</span> <span class="n">FlaskForm</span>
+<span class="kn">from</span> <span class="nn">wtforms</span> <span class="kn">import</span> <span class="n">StringField</span><span class="p">,</span> <span class="n">IntegerField</span><span class="p">,</span> <span class="n">SubmitField</span><span class="p">,</span> <span class="n">PasswordField</span><span class="p">,</span> <span class="n">RadioField</span><span class="p">,</span> <span class="n">SelectField</span><span class="p">,</span> <span class="n">FileField</span><span class="p">,</span> <span class="n">TextAreaField</span>
+<span class="kn">from</span> <span class="nn">wtforms.validators</span> <span class="kn">import</span> <span class="n">DataRequired</span><span class="p">,</span> <span class="n">Email</span>
+
+<span class="kn">from</span> <span class="nn">profil</span> <span class="kn">import</span> <span class="n">db</span><span class="p">,</span> <span class="n">Guest</span><span class="p">,</span> <span class="n">Player</span><span class="p">,</span> <span class="n">Orga</span>
+
+
+<span class="n">db</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="n">db</span><span class="o">.</span><span class="n">create_tables</span><span class="p">([</span><span class="n">Guest</span><span class="p">,</span> <span class="n">Player</span><span class="p">,</span> <span class="n">Orga</span><span class="p">])</span>
+
+<span class="c1">## Pour le moment, orga_login et orga_register sont les mêmes parce qu&#39;on ne sait</span>
+<span class="c1">## Pas encore ce que l&#39;on va demander de plus comme informations à l&#39;organisateur pour se créer un compte</span>
+
+
+<div class="viewcode-block" id="orga_login"><a class="viewcode-back" href="../form.html#form.orga_login">[docs]</a><span class="k">class</span> <span class="nc">orga_login</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The orga_register class inherits from the FlaskForm class of WTForms.</span>
+<span class="sd">    It allows a organizer to log in the website.</span>
+
+<span class="sd">    :param email: Field for entering the organizer&#39;s email address. It is required and must be a valid email address.</span>
+<span class="sd">    :type email: StringField </span>
+<span class="sd">    :param password: Field for entering the organizer&#39;s password. It is required.</span>
+<span class="sd">    :type password: PasswordField </span>
+<span class="sd">    :param mariage: Field for entering the name of the wedding to which the organizer wants to log in. It is required.</span>
+<span class="sd">    :type mariage: StringField</span>
+<span class="sd">    :param submit: Button to submit the form.</span>
+<span class="sd">    :type submit: SubmitField</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">email</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">(),</span> <span class="n">Email</span><span class="p">()])</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">PasswordField</span><span class="p">(</span><span class="s1">&#39;Mot de Passe&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">mariage</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Mariage&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s2">&quot;Se connecter&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="orga_register"><a class="viewcode-back" href="../form.html#form.orga_register">[docs]</a><span class="k">class</span> <span class="nc">orga_register</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The orga_register class inherits from the FlaskForm class of WTForms.</span>
+<span class="sd">    It allows a organizer to sign in the website.</span>
+
+<span class="sd">    :param email: Field for entering the organizer&#39;s email address. It is required and must be a valid email address.</span>
+<span class="sd">    :type email: StringField </span>
+<span class="sd">    :param password: Field for entering the organizer&#39;s password. It is required.</span>
+<span class="sd">    :type password: PasswordField </span>
+<span class="sd">    :param mariage: Field for entering the name of the wedding to which the organizer wants to sign in. It is required.</span>
+<span class="sd">    :type mariage: StringField</span>
+<span class="sd">    :param submit: Button to submit the form.</span>
+<span class="sd">    :type submit: SubmitField</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">    validate_email(self, email): This method is used to validate the organizer&#39;s email address.</span>
+<span class="sd">    validate_password(self, password): This method is used to validate the organizer&#39;s password.</span>
+
+<span class="sd">    Example of use:</span>
+<span class="sd">    form = orga_reg()</span>
+<span class="sd">    if form.validate_on_submit():</span>
+<span class="sd">        email = form.email.data</span>
+<span class="sd">        password = form.password.data</span>
+<span class="sd">        mariage = form.mariage.data</span>
+<span class="sd">        # Perform the login</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Votre prénom&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">surname</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Votre nom&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">(),</span> <span class="n">Email</span><span class="p">(</span><span class="s2">&quot;Email invalide&quot;</span><span class="p">)])</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">PasswordField</span><span class="p">(</span><span class="s1">&#39;Mot de passe&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">mariage</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Mariage&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">groom_name</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Prénom du marié&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">groom_surname</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Nom du marié&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">bride_name</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Prénom de la mariée&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">bride_surname</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Nom de la mariée&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>    
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s2">&quot;S&#39;inscrire&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="guest_login"><a class="viewcode-back" href="../form.html#form.guest_login">[docs]</a><span class="k">class</span> <span class="nc">guest_login</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The guest_login class inherits from the FlaskForm class of WTForms. </span>
+<span class="sd">    It allows guests to log in the website.</span>
+
+<span class="sd">    :param email: Field for entering the guest&#39;s email address. It is required and must be a valid email address.</span>
+<span class="sd">    :type email: StringField </span>
+<span class="sd">    :param password: Field for entering the guest&#39;s password. It is required.</span>
+<span class="sd">    :type password: PasswordField </span>
+<span class="sd">    :param mariage: Field for entering the name of the wedding to which the user wants to log in. It is required.</span>
+<span class="sd">    :type mariage: StringField</span>
+<span class="sd">    :param submit: Button to submit the form.</span>
+<span class="sd">    :type submit: SubmitField</span>
+<span class="sd">   </span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">    validate_email(self, email): This method is used to validate the guest&#39;s email address.</span>
+<span class="sd">    validate_password(self, password): This method is used to validate the guest&#39;s password.</span>
+
+<span class="sd">    Example of use:</span>
+<span class="sd">    form = guest_login()</span>
+<span class="sd">    if form.validate_on_submit():</span>
+<span class="sd">        email = form.email.data</span>
+<span class="sd">        password = form.password.data</span>
+<span class="sd">        mariage = form.mariage.data</span>
+<span class="sd">        # Perform the login</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">email</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">(),</span> <span class="n">Email</span><span class="p">()])</span>
+    <span class="n">mariage</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Mariage&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">PasswordField</span><span class="p">(</span><span class="s1">&#39;Mot de passe&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s2">&quot;Se connecter&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="player_register_init"><a class="viewcode-back" href="../form.html#form.player_register_init">[docs]</a><span class="k">class</span> <span class="nc">player_register_init</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param email: Field for entering the guest&#39;s email address. It is required and must be a valid email address.</span>
+<span class="sd">    :type email: StringField  </span>
+<span class="sd">    :param password: Field for entering the guest&#39;s password. It is required. It will be crypted. </span>
+<span class="sd">    :type password: PasswordField</span>
+<span class="sd">    :param mariage: Field for entering the name of the wedding to which the guest wants to sign in. It is required. The guest needs to already be invited to this wedding.</span>
+<span class="sd">    :type mariage: StringField</span>
+<span class="sd">    :param submit: Button to submit the form.</span>
+<span class="sd">    :type submit: SubmitField  </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">email</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">(),</span> <span class="n">Email</span><span class="p">()])</span>
+    <span class="n">mariage</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;A quel mariage êtes-vous invité ?&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s2">&quot;S&#39;inscrire&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="player_register"><a class="viewcode-back" href="../form.html#form.player_register">[docs]</a><span class="k">class</span> <span class="nc">player_register</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The player_register class inherits from the FlaskForm class of WTForms.</span>
+<span class="sd">    It allows guests to sign in the website and to enter their information.</span>
+
+<span class="sd">    :param mariage: Field for entering the name of the wedding to which the guest wants to log in. It is required. The guest needs to already be invited to this wedding.</span>
+<span class="sd">    :type mariage: StringField</span>
+<span class="sd">    :param password: Field for entering the guest&#39;s password. It is required. It will be crypted. </span>
+<span class="sd">    :type password: PasswordField</span>
+<span class="sd">    :param age: Field for entering the age of the guest. It is required.</span>
+<span class="sd">    :type age: IntegerField</span>
+<span class="sd">    :param couple_situation: Field for entering the couple situation of a guest : 0 if not in a couple, 1 if in a couple. It is required.</span>
+<span class="sd">    :type couple_situation: RadioField)</span>
+<span class="sd">    :param partner_name: Field for entering the name of his partner among the guest&#39;s list (if their is one). It is required if the guest is in a couple.</span>
+<span class="sd">    :type partner_name: SelectField</span>
+<span class="sd">    :param gender: Field for entering the gender of the guest. It is required.</span>
+<span class="sd">    :type gender: RadioField</span>
+<span class="sd">    :param family: Field for entering the family of the guest. It is required.</span>
+<span class="sd">    :type family: RadioField</span>
+<span class="sd">    :param favorite_guest_1: Field for entering the first choice of guest who the guest wants to be seated next to.</span>
+<span class="sd">    :type favorite_guest_1: SelectField</span>
+<span class="sd">    :param favorite_guest_2: Field for entering the second choice of guest who the guest wants to be seated next to.</span>
+<span class="sd">    :type favorite_guest_2: SelectField</span>
+<span class="sd">    :param favorite_guest_3: Field for entering the third choice of guest who the guest wants to be seated next to.</span>
+<span class="sd">    :type favorite_guest_3: SelectField</span>
+<span class="sd">    :param submit: Button to submit the form.</span>
+<span class="sd">    :type submit: SubmitField</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ident</span><span class="p">,</span> <span class="n">mariage</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ident</span> <span class="o">=</span> <span class="n">ident</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mariage</span> <span class="o">=</span> <span class="n">mariage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_choices</span><span class="p">()</span>
+
+    <span class="n">password</span> <span class="o">=</span> <span class="n">PasswordField</span><span class="p">(</span><span class="s1">&#39;Définir un mot de passe&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="s1">&#39;Votre age&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">couple_situation</span> <span class="o">=</span> <span class="n">RadioField</span><span class="p">(</span><span class="s1">&#39;Etes-vous en couple ?&#39;</span><span class="p">,</span> <span class="n">choices</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;Oui&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;Non&#39;</span><span class="p">)],</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">partner_name</span> <span class="o">=</span> <span class="n">SelectField</span><span class="p">(</span><span class="s1">&#39;Si oui, veuillez renseigner le nom de votre partenaire.&#39;</span><span class="p">)</span>
+    <span class="n">gender</span> <span class="o">=</span> <span class="n">RadioField</span><span class="p">(</span><span class="s1">&#39;Votre genre&#39;</span><span class="p">,</span> <span class="n">choices</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="s1">&#39;Homme&#39;</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;Femme&#39;</span><span class="p">)],</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">family</span> <span class="o">=</span> <span class="n">RadioField</span><span class="p">(</span><span class="s1">&#39;De la part de qui venez-vous ?&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">favorite_guest_1</span> <span class="o">=</span> <span class="n">SelectField</span><span class="p">(</span><span class="s1">&#39;1er choix&#39;</span><span class="p">)</span>
+    <span class="n">favorite_guest_2</span> <span class="o">=</span> <span class="n">SelectField</span><span class="p">(</span><span class="s1">&#39;2e choix&#39;</span><span class="p">)</span>
+    <span class="n">favorite_guest_3</span> <span class="o">=</span> <span class="n">SelectField</span><span class="p">(</span><span class="s1">&#39;3e choix&#39;</span><span class="p">)</span>
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s2">&quot;S&#39;inscrire&quot;</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="player_register.set_choices"><a class="viewcode-back" href="../form.html#form.player_register.set_choices">[docs]</a>    <span class="k">def</span> <span class="nf">set_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">query_partner</span> <span class="o">=</span> <span class="n">Guest</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">Guest</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mariage</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Guest</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ident</span><span class="p">))</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Guest</span><span class="o">.</span><span class="n">surname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partner_name</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;-- selectionner une option --&quot;</span><span class="p">)]</span><span class="o">+</span><span class="p">[(</span><span class="n">g</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">full_name</span><span class="p">())</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">query_partner</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">favorite_guest_1</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;-- selectionner une option --&quot;</span><span class="p">)]</span><span class="o">+</span><span class="p">[(</span><span class="n">g</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">full_name</span><span class="p">())</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">query_partner</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">favorite_guest_2</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;-- selectionner une option --&quot;</span><span class="p">)]</span><span class="o">+</span><span class="p">[(</span><span class="n">g</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">full_name</span><span class="p">())</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">query_partner</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">favorite_guest_3</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;-- selectionner une option --&quot;</span><span class="p">)]</span><span class="o">+</span><span class="p">[(</span><span class="n">g</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">full_name</span><span class="p">())</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">query_partner</span><span class="p">]</span>
+
+        <span class="n">orga</span> <span class="o">=</span> <span class="n">Orga</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Orga</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mariage</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">family</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">orga</span><span class="o">.</span><span class="n">groom_full_name</span><span class="p">()),</span> <span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">orga</span><span class="o">.</span><span class="n">bride_full_name</span><span class="p">())]</span></div></div>
+
+
+<div class="viewcode-block" id="ChangePassword"><a class="viewcode-back" href="../form.html#form.ChangePassword">[docs]</a><span class="k">class</span> <span class="nc">ChangePassword</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ChangePassword class inherits from the FlaskForm class of WTForms.</span>
+<span class="sd">    It allows guests or organizers to change their passwords.</span>
+
+<span class="sd">    :param actual_password: Field for entering the actual password. It is required.</span>
+<span class="sd">    :type actual_password: PasswordField</span>
+<span class="sd">    :param new_password: Field for entering the new password. It is required. It will be crypted. </span>
+<span class="sd">    :type password: PasswordField</span>
+<span class="sd">    :param confirm: Field for entering a second time the new password. It is required. It will be crypted. </span>
+<span class="sd">    :type age: PasswordField</span>
+<span class="sd">    :param submit: Button to submit the form.</span>
+<span class="sd">    :type submit: SubmitField</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">actual_password</span> <span class="o">=</span> <span class="n">PasswordField</span><span class="p">(</span><span class="s2">&quot;Mot de passe actuel &quot;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">new_password</span> <span class="o">=</span> <span class="n">PasswordField</span><span class="p">(</span><span class="s2">&quot;Nouveau mot de passe &quot;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">confirm_password</span> <span class="o">=</span> <span class="n">PasswordField</span><span class="p">(</span><span class="s1">&#39;Confirmer le mot de passe&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s2">&quot;Modifer&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ChangePassword.must_be_equal"><a class="viewcode-back" href="../form.html#form.ChangePassword.must_be_equal">[docs]</a>    <span class="k">def</span> <span class="nf">must_be_equal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method verifies if the new password and the confirm password are the same.</span>
+
+<span class="sd">        :return: True if the new password and the confirm password are the same, False otherwise</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">confirm_password</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_password</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+            
+<div class="viewcode-block" id="ChangePassword.verify_code"><a class="viewcode-back" href="../form.html#form.ChangePassword.verify_code">[docs]</a>    <span class="k">def</span> <span class="nf">verify_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">actual_password</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">code</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="kc">False</span></div></div>
+
+<div class="viewcode-block" id="UploadFile"><a class="viewcode-back" href="../form.html#form.UploadFile">[docs]</a><span class="k">class</span> <span class="nc">UploadFile</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The UploadFile class inherits from the FlaskForm class of WTForms.</span>
+<span class="sd">    It allows organizers to upload files to give the guest&#39;s list or the number of tables and their capacity.</span>
+
+<span class="sd">    :param file_guest: Field to upload a file containing the list of guests.</span>
+<span class="sd">    :type file_guest: FileField</span>
+<span class="sd">    :param file_tables: Field to upload a file containing the tables and their capacities.</span>
+<span class="sd">    :type file_tables: FileField</span>
+<span class="sd">    :param submit: Button to submit the form.</span>
+<span class="sd">    :type submit: SubmitField</span>
+
+<span class="sd">    Example of use:</span>
+
+<span class="sd">            A FAIRE !!!!</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">file_guest</span> <span class="o">=</span> <span class="n">FileField</span><span class="p">(</span><span class="s2">&quot;Fichier contenant les invités&quot;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[])</span>
+    <span class="n">file_tables</span> <span class="o">=</span> <span class="n">FileField</span><span class="p">(</span><span class="s2">&quot;Fichier pour les tables&quot;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[])</span>
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s2">&quot;Envoyer les fichiers&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ResetPassword"><a class="viewcode-back" href="../form.html#form.ResetPassword">[docs]</a><span class="k">class</span> <span class="nc">ResetPassword</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ResetPassword class inherits from the FlaskForm class of WTForms.</span>
+<span class="sd">    It allows organizers and guests to reset their password if they have forgotten it.</span>
+
+<span class="sd">    :param mariage: Field for entering the name of the wedding to which the guest or the organizer is invited. It is required.</span>
+<span class="sd">    :type mariage: StringField</span>
+<span class="sd">    :param email: Field for entering the guest or organizer&#39;s email address. It is required and must be a valid email address.</span>
+<span class="sd">    :type email: StringField  </span>
+<span class="sd">    :param submit: Button to submit the form.</span>
+<span class="sd">    :type submit: SubmitField</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">mariage</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s2">&quot;Nom du mariage&quot;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s1">&#39;Email&#39;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">(),</span> <span class="n">Email</span><span class="p">()])</span>
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s2">&quot;Recevoir un code&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ExchangeSeats"><a class="viewcode-back" href="../form.html#form.ExchangeSeats">[docs]</a><span class="k">class</span> <span class="nc">ExchangeSeats</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ExchangeSeats class inherits from the FlaskForm class of WTForms.</span>
+<span class="sd">    It allows organizers to exchange guests who are at different tables. </span>
+
+<span class="sd">    :param player_1: Field for selecting the first guest to exchange.</span>
+<span class="sd">    :type player_1: SelectField</span>
+<span class="sd">    :param player_2: Field for selecting the second guest to exchange.</span>
+<span class="sd">    :type player_2: SelectField  </span>
+<span class="sd">    :param submit: Button to submit the form.</span>
+<span class="sd">    :type submit: SubmitField</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mariage</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mariage</span> <span class="o">=</span> <span class="n">mariage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_choices</span><span class="p">()</span>
+    
+    <span class="n">player_1</span> <span class="o">=</span> <span class="n">SelectField</span><span class="p">(</span><span class="s2">&quot;Première personne que vous souhaitez échanger: &quot;</span><span class="p">)</span>
+    <span class="n">player_2</span> <span class="o">=</span> <span class="n">SelectField</span><span class="p">(</span><span class="s2">&quot;Deuxième personne que vous souhaitez échanger: &quot;</span><span class="p">)</span>
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s2">&quot;Echanger&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ExchangeSeats.set_choices"><a class="viewcode-back" href="../form.html#form.ExchangeSeats.set_choices">[docs]</a>    <span class="k">def</span> <span class="nf">set_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method gives the different options of guests we can exchange which means aall the guests that are coming to the wedding.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Guest</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">(</span><span class="n">Guest</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Player</span><span class="o">.</span><span class="n">id</span><span class="p">))</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mariage</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Guest</span><span class="o">.</span><span class="n">surname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player_1</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;-- selectionner une option --&quot;</span><span class="p">)]</span><span class="o">+</span><span class="p">[(</span><span class="n">g</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">full_name</span><span class="p">())</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">query</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player_2</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;-- selectionner une option --&quot;</span><span class="p">)]</span><span class="o">+</span><span class="p">[(</span><span class="n">g</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">g</span><span class="o">.</span><span class="n">full_name</span><span class="p">())</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">query</span><span class="p">]</span></div></div>
+
+
+
+<div class="viewcode-block" id="nb_guest_couple"><a class="viewcode-back" href="../form.html#form.nb_guest_couple">[docs]</a><span class="k">class</span> <span class="nc">nb_guest_couple</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The nb_guest_couple class inherits from the FlaskForm class of WTForms.</span>
+<span class="sd">    It allows the user to give the number of guest and couples he wants for his fake wedding. </span>
+
+<span class="sd">    :param name: Field for entering the name of the weeding we want to create. It is required.</span>
+<span class="sd">    :type name: StringField</span>
+<span class="sd">    :param nb_guest: Field for entering the number of guests for the weeding we want to create. It is required.</span>
+<span class="sd">    :type nb_guest: IntegerField  </span>
+<span class="sd">    :param nb_couple: Field for entering the number of couples for the weeding we want to create. It is required.</span>
+<span class="sd">    :type nb_couple: IntegerField  </span>
+<span class="sd">    :param submit: Button to submit the form.</span>
+<span class="sd">    :type submit: SubmitField</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s2">&quot;Choisissez le nom du mariage que vous souhaitez créer&quot;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">nb_guest</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="s2">&quot;Nombre de participants&quot;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">nb_couple</span> <span class="o">=</span> <span class="n">IntegerField</span><span class="p">(</span><span class="s2">&quot;Choisissez le nombre de couples au sein de votre mariage&quot;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s2">&quot;Enregistrer&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="nb_guest_couple.name_orga_available"><a class="viewcode-back" href="../form.html#form.nb_guest_couple.name_orga_available">[docs]</a>    <span class="k">def</span> <span class="nf">name_orga_available</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method verifies if no organizers have this wedding name.</span>
+
+<span class="sd">        :return: True if it is available, False otherwise</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">Orga</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Orga</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+    
+<div class="viewcode-block" id="nb_guest_couple.name_player_available"><a class="viewcode-back" href="../form.html#form.nb_guest_couple.name_player_available">[docs]</a>    <span class="k">def</span> <span class="nf">name_player_available</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method verifies if no guests have this wedding name.</span>
+
+<span class="sd">        :return: True if it is available, False otherwise</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">Guest</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Guest</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="nb_guest_couple.verify_nb_couple"><a class="viewcode-back" href="../form.html#form.nb_guest_couple.verify_nb_couple">[docs]</a>    <span class="k">def</span> <span class="nf">verify_nb_couple</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method verifies if the number of couples we want is feasible regarding to the number of guests.</span>
+
+<span class="sd">        :return: True if it is possible, False otherwise</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_couple</span><span class="o">.</span><span class="n">data</span><span class="o">*</span><span class="mi">2</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span></div></div>
+    
+<div class="viewcode-block" id="TablesFakeMariage"><a class="viewcode-back" href="../form.html#form.TablesFakeMariage">[docs]</a><span class="k">class</span> <span class="nc">TablesFakeMariage</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The TablesFakeMariage class inherits from the FlaskForm class of WTForms.</span>
+<span class="sd">    It allows the user to choose the composition of tables he want for his fake wedding. </span>
+
+<span class="sd">    :param table_capacity_number: Field for entering the name of the weeding we want to create. It is required.</span>
+<span class="sd">    :type table_capacity_number: SelectField</span>
+<span class="sd">    :param submit: Button to submit the form.</span>
+<span class="sd">    :type submit: SubmitField</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nb_guest</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span> <span class="o">=</span> <span class="n">nb_guest</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_choices</span><span class="p">()</span>
+    
+    <span class="n">table_capacity_number</span> <span class="o">=</span> <span class="n">SelectField</span><span class="p">(</span><span class="s2">&quot;Choisissez la capacité et le nombre de tables de cette capacité&quot;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s2">&quot;Générer un mariage&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="TablesFakeMariage.set_choices"><a class="viewcode-back" href="../form.html#form.TablesFakeMariage.set_choices">[docs]</a>    <span class="k">def</span> <span class="nf">set_choices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method gives the different possibilites for the composition of tables when the number of guests is given.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1">#we use euclidian division in order to have enought seats for the wedding</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table_capacity_number</span><span class="o">.</span><span class="n">choices</span> <span class="o">=</span> <span class="p">[([[</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">)</span><span class="o">//</span><span class="n">j</span><span class="p">,</span><span class="n">j</span> <span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">)</span><span class="o">%</span><span class="n">j</span><span class="p">]],</span> <span class="nb">str</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">)</span><span class="o">//</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; table de &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; et &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; table de &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">)</span><span class="o">%</span><span class="n">j</span><span class="p">)))</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">10</span><span class="p">]]</span> </div></div>
+
+<div class="viewcode-block" id="ContactUs"><a class="viewcode-back" href="../form.html#form.ContactUs">[docs]</a><span class="k">class</span> <span class="nc">ContactUs</span><span class="p">(</span><span class="n">FlaskForm</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ContactUs class inherits from the FlaskForm class of WTForms.</span>
+<span class="sd">    It allows a user to send an email if he has any question.</span>
+
+<span class="sd">    :param name: Field for entering the name of the person who wants to contact us. It is required.</span>
+<span class="sd">    :type name: StringField</span>
+<span class="sd">    :param email: Field for entering the email of the person who wants to contact us. It is required and must be a valid email address.</span>
+<span class="sd">    :type email: StringField</span>
+<span class="sd">    :param subject: Field for entering the subject of the mail. It is required.</span>
+<span class="sd">    :type subject: StringField</span>
+<span class="sd">    :param body: Field for entering the content of the mail. It is required.</span>
+<span class="sd">    :type body: TextAreaField</span>
+<span class="sd">    :param submit: Button to submit the form.</span>
+<span class="sd">    :type submit: SubmitField</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">name</span><span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s2">&quot;Votre nom&quot;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">email</span><span class="o">=</span><span class="n">StringField</span><span class="p">(</span><span class="s2">&quot;Votre mail&quot;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">(),</span> <span class="n">Email</span><span class="p">()])</span>
+    <span class="n">subject</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="s2">&quot;Objet du mail&quot;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="n">TextAreaField</span><span class="p">(</span><span class="s2">&quot;Contenu du mail&quot;</span><span class="p">,</span> <span class="n">validators</span><span class="o">=</span><span class="p">[</span><span class="n">DataRequired</span><span class="p">()])</span> 
+    <span class="n">submit</span> <span class="o">=</span> <span class="n">SubmitField</span><span class="p">(</span><span class="s2">&quot;Envoyer&quot;</span><span class="p">)</span></div>
+
+<span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Lucas Sautier - Pierre-Louis Le Goff - Nicolas Corvol - Garance Gérard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}  
+
+<div class="forme">
+    <h1>A propos de nous </h1>
+
+    <p>Nous sommes une équipe de quatre ingénieurs de l'Ecole des Ponts issus des départements Génie Industriel et Ingénierie Mathématique et Informatique qui avons travaillé sur ce sujet dans le cadre d'un projet informatique proposé par le cours de Technique et Développement Logiciel.</p>
+    <h2> Présentation des membres:</h2>
+
+    <div>
+        <img class="imgaboutus" src="{{ url_for('static', filename='photo_PierreLouis.png') }}">
+        <img class="imgaboutus" src="{{ url_for('static', filename='photo_Nicolas.jpeg') }}">
+        <img class="imgaboutus" src="{{ url_for('static', filename='photo_Lucas.jpg') }}">
+        <img class="imgaboutus" src="{{ url_for('static', filename='photo_Garance.jpg') }}">
+    </div>
+
+    <div class="floating-box">Pilou,<br>
+        toujours présent quand il s'agit de tenir la chandelle, il enchaîne tout de même les conquêtes sans jamais trouver celle qui fera chavirer son coeur.
+    </div>
+
+    <div class="floating-box">Nico,<br>
+        le leader du groupe, il est prêt à passer des nuits entières sur ce projet car il n'attend qu'une seule et unique chose : pouvoir enfin épouser la femme de sa vie !<br>
+    </div>
+
+    <div class="floating-box">Lucas,<br>
+        le célibataire endurci, il désespère de trouver sa moitié,  son rêve utilme est de pouvoir tester l'algorithme pour son propre mariage.<br><br>
+    </div>
+
+    <div class="floating-box">Gary,<br>
+        toujours de bonne humeur et de bonne volonté, c'est un vrai rayon de soleil pour le groupe ! Elle motive les troupes par son charisme impressionant.<br><br>
+    </div>
+</div>
+
+{% include 'footer.html' %}
+{% endblock %}
+

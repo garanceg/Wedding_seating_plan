@@ -1,0 +1,7 @@
+testeeee module
+===============
+
+.. automodule:: src.testeeee
+   :members:
+   :undoc-members:
+   :show-inheritance:

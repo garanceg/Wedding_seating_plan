@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+<img id="fond_log" src="{{ url_for('static', filename='fond_orga.jpeg') }}"><br><br>
+
+<div id="register">
+    <h1>Organisateur : S'enregistrer</h1><br>
+
+    {% for message in messages %}
+        <div class="flash-message">{{ message }} <br><br> </div>
+        {% set messages = messages[:loop.index] + messages[loop.index+1:] %}
+    {% endfor %}
+
+    <div style="text-align: right; padding: 3px 45px 3px 3px">
+        <form action="" method="post">
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                {{form.mariage.label(class="form-label") }}
+                {{ form.mariage(class="form-input") }}
+            </div>
+            
+            <div class="form-group">
+                {{form.name.label(class="form-label") }}
+                {{ form.name(class="form-input") }}
+            </div>
+
+            <div class="form-group">
+                {{form.surname.label(class="form-label") }}
+                {{ form.surname(class="form-input") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-input") }}
+                    
+                {% for error in form.email.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{ form.password.label(class="form-label")}}
+                {{ form.password(class="form-input") }}
+                {% for error in form.password.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{form.groom_name.label(class="form-label") }}
+                {{ form.groom_name(class="form-input") }}
+            </div>
+
+            <div class="form-group">
+                {{form.groom_surname.label(class="form-label") }}
+                {{ form.groom_surname(class="form-input") }}
+            </div>
+
+            <div class="form-group">
+                {{form.bride_name.label(class="form-label") }}
+                {{ form.bride_name(class="form-input") }}
+            </div>
+
+            <div class="form-group">
+                {{form.bride_surname.label(class="form-label") }}
+                {{ form.bride_surname(class="form-input") }}
+            </div>
+        </div><br>
+    {{ form.submit(class='btn btn-primary') }}<br><br>
+    </form>
+</div>
+
+{% endblock %}

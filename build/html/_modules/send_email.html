@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>send_email &mdash; Event-Assignement 2023 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Event-Assignement
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Event-Assignement</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">send_email</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for send_email</h1><div class="highlight"><pre>
+<span></span><span class="c1">#-*- coding: utf-8 -*-</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">email.message</span> <span class="kn">import</span> <span class="n">EmailMessage</span>
+<span class="kn">import</span> <span class="nn">ssl</span>
+<span class="kn">import</span> <span class="nn">smtplib</span>
+<span class="kn">from</span> <span class="nn">profil</span> <span class="kn">import</span> <span class="n">db</span><span class="p">,</span> <span class="n">Guest</span><span class="p">,</span> <span class="n">Player</span><span class="p">,</span> <span class="n">Orga</span>
+<span class="n">db</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+ 
+
+<div class="viewcode-block" id="send_mail"><a class="viewcode-back" href="../send_email.html#send_email.send_mail">[docs]</a><span class="k">def</span> <span class="nf">send_mail</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="n">subject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The function send_mail_organisation send an email to the all the guest of the wedding, the subject of the mail is subject and the body of the mail is message. The Email will be sent by the account mariageseatingco@gmail.com which is the account of the application</span>
+
+<span class="sd">    :param message: The body of the email that has to be sent</span>
+<span class="sd">    :type message: StringField </span>
+<span class="sd">    :param subject: The subject of the email that has to be sent</span>
+<span class="sd">    :type subject: StringField</span>
+<span class="sd">    :param communication_list: The mailing list. The list of email adress to which the email will be sent </span>
+<span class="sd">    :type communication_list: List </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">email_sender</span> <span class="o">=</span> <span class="s1">&#39;mariageseatingco@gmail.com&#39;</span>
+    <span class="n">email_password</span> <span class="o">=</span> <span class="s1">&#39;xasrtzphtmtiouyr&#39;</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="n">Guest</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">create_default_context</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">guest</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+        <span class="n">email_receiver</span><span class="o">=</span><span class="n">guest</span><span class="o">.</span><span class="n">email</span>
+        <span class="n">em</span><span class="o">=</span><span class="n">EmailMessage</span><span class="p">()</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="n">em</span><span class="p">[</span><span class="s1">&#39;From&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">email_sender</span>
+        <span class="n">em</span><span class="p">[</span><span class="s1">&#39;To&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">email_receiver</span>
+        <span class="n">em</span><span class="p">[</span><span class="s1">&#39;Subject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subject</span>
+        <span class="n">em</span><span class="o">.</span><span class="n">set_content</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>        
+        <span class="k">with</span> <span class="n">smtplib</span><span class="o">.</span><span class="n">SMTP_SSL</span><span class="p">(</span><span class="s1">&#39;smtp.gmail.com&#39;</span><span class="p">,</span> <span class="mi">465</span> <span class="p">,</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span> <span class="k">as</span> <span class="n">smtp</span><span class="p">:</span>
+            <span class="n">smtp</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">email_sender</span><span class="p">,</span> <span class="n">email_password</span><span class="p">)</span>
+            <span class="n">smtp</span><span class="o">.</span><span class="n">sendmail</span><span class="p">(</span><span class="n">email_sender</span><span class="p">,</span> <span class="n">email_receiver</span><span class="p">,</span> <span class="n">em</span><span class="o">.</span><span class="n">as_string</span><span class="p">())</span></div>
+
+
+
+<div class="viewcode-block" id="send_mail_organisation"><a class="viewcode-back" href="../send_email.html#send_email.send_mail_organisation">[docs]</a><span class="k">def</span> <span class="nf">send_mail_organisation</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="n">subject</span><span class="p">,</span><span class="n">communication_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The function send_mail_organisation send an email to the mailig list called communication_list, the subject of the mail is subject and the body of the mail is message. The Email will be sent by the account mariageseatingco@gmail.com which is the account of the application</span>
+
+<span class="sd">    :param message: The body of the email that has to be sent</span>
+<span class="sd">    :type message: StringField </span>
+<span class="sd">    :param subject: The subject of the email that has to be sent</span>
+<span class="sd">    :type subject: StringField</span>
+<span class="sd">    :param communication_list: The mailing list. The list of email adress to which the email will be sent </span>
+<span class="sd">    :type communication_list: List </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">email_sender</span> <span class="o">=</span> <span class="s1">&#39;mariageseatingco@gmail.com&#39;</span>
+    <span class="n">email_password</span> <span class="o">=</span> <span class="s1">&#39;jiwkwizanjbcykwq&#39;</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">create_default_context</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">email</span> <span class="ow">in</span> <span class="n">communication_list</span><span class="p">:</span>
+        <span class="n">email_receiver</span><span class="o">=</span><span class="n">email</span>
+        <span class="n">em</span><span class="o">=</span><span class="n">EmailMessage</span><span class="p">()</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="n">em</span><span class="p">[</span><span class="s1">&#39;From&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">email_sender</span>
+        <span class="n">em</span><span class="p">[</span><span class="s1">&#39;To&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">email_receiver</span>
+        <span class="n">em</span><span class="p">[</span><span class="s1">&#39;Subject&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">subject</span>
+        <span class="n">em</span><span class="o">.</span><span class="n">set_content</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>        
+        <span class="k">with</span> <span class="n">smtplib</span><span class="o">.</span><span class="n">SMTP_SSL</span><span class="p">(</span><span class="s1">&#39;smtp.gmail.com&#39;</span><span class="p">,</span> <span class="mi">465</span> <span class="p">,</span><span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">)</span> <span class="k">as</span> <span class="n">smtp</span><span class="p">:</span>
+            <span class="n">smtp</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">email_sender</span><span class="p">,</span> <span class="n">email_password</span><span class="p">)</span>
+            <span class="n">smtp</span><span class="o">.</span><span class="n">sendmail</span><span class="p">(</span><span class="n">email_sender</span><span class="p">,</span> <span class="n">email_receiver</span><span class="p">,</span> <span class="n">em</span><span class="o">.</span><span class="n">as_string</span><span class="p">())</span></div>
+
+
+
+<span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Lucas Sautier - Pierre-Louis Le Goff - Nicolas Corvol - Garance Gérard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<img id ="fond_guest_list_table" src="{{ url_for('static', filename='fond_guest_list_table.jpg') }}" >
+<div class="forme">
+  <h1>Liste des invités</h1><br>
+
+  {% if nb_guest == nb_player and nb_player > 0 %}
+    Tous vos invités ont répondu présent à votre invitation !
+  {% elif nb_player == 0 %} 
+    Vous n'avez pas encore d'invités pour ce mariage, vous pouvez en rajouter <a href="{{ url_for('add_guest', mariage=mariage, statut=statut, ident=ident) }} ">ici</a> !
+  {% else %}
+    {{ nb_player }} sur vos {{ nb_guest }} invités ont répondu à votre invitation pour le moment, vous pouvez leur envoyer un message de rappel si vous le souhaitez. 
+  {% endif %}
+
+  <p style="font-size: 20px;">Vous pouvez désormais générer un plan de table intelligent actualisé avec la liste des invités ayant d'ores et déjà répondu au questionnaire en cliquant sur le lien suivant : 
+    <a href="{{ url_for('table_assigment', mariage=mariage, statut=statut, ident=ident) }} ">Générer un plan de table</a>
+  </p><br>
+
+  <div class="center">
+    {% for message in messages %}<br>
+      <div class="flash-message">{{ message }}</div>
+      {% set messages = messages[:loop.index] + messages[loop.index+1:] %} <br><br>
+    {% endfor %}
+
+    <table>
+      <tr>
+        <th width=100px>Prénom</th>
+        <th width=150px>Nom</th>
+        <th width="300px">Email</th>
+        <th width=100px>Participe</th>
+      </tr>
+      <ol> 
+          {% for guest in query %}
+          <tr>
+            <td>{{guest.full_name().split(' ')[0]}}</td>
+            <td>{{guest.full_name().split(' ')[1]}}</td>
+            <td>{{guest.email}}</td>
+            {% if Player.is_coming(guest.id, mariage)==0 %}
+              <td>NON</td>
+            {% else %}
+              <td><a href="{{ url_for('guest.guest_profil', statut='orga', ident=ident,  mariage=mariage, full_name = guest.full_name(), guest_ident=guest.id) }} ">OUI</a></td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+      </ol>
+    </table>
+  </div>
+</div>
+
+{% include "footer.html" %}
+{% endblock %}

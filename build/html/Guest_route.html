@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Guest_route module &mdash; Event-Assignement 2023 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Orga_route module" href="Orga_route.html" />
+    <link rel="prev" title="src" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Event-Assignement
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Guest_route module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Orga_route.html">Orga_route module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RO.html">RO module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create_wed.html">create_wed module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="form.html">form module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="profil.html">profil module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="send_email.html">send_email module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Event-Assignement</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">src</a></li>
+      <li class="breadcrumb-item active">Guest_route module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Guest_route.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.Guest_route">
+<span id="guest-route-module"></span><h1>Guest_route module<a class="headerlink" href="#module-src.Guest_route" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Guest_route.guest_change_info">
+<span class="sig-prename descclassname"><span class="pre">src.Guest_route.</span></span><span class="sig-name descname"><span class="pre">guest_change_info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mariage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ident</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/Guest_route.html#guest_change_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Guest_route.guest_change_info" title="Permalink to this definition"></a></dt>
+<dd><p>This function ‘guest_change_info’ handles the back-end of the page that allows the guest to modify its information</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>statut</strong> (<em>str</em>) – statut of the user</p></li>
+<li><p><strong>mariage</strong> (<em>str</em>) – name of the mariage of the guest accessing to its personal profile</p></li>
+<li><p><strong>ident</strong> (<em>int</em>) – id of the user</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Guest_route.guest_login_required_id">
+<span class="sig-prename descclassname"><span class="pre">src.Guest_route.</span></span><span class="sig-name descname"><span class="pre">guest_login_required_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ident</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/Guest_route.html#guest_login_required_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Guest_route.guest_login_required_id" title="Permalink to this definition"></a></dt>
+<dd><p>This wrap function restrain certain pages only to user that are connected as guest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ident</strong> (<em>int</em>) – id of the user</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Guest_route.guest_profil">
+<span class="sig-prename descclassname"><span class="pre">src.Guest_route.</span></span><span class="sig-name descname"><span class="pre">guest_profil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ident</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mariage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guest_ident</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/Guest_route.html#guest_profil"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Guest_route.guest_profil" title="Permalink to this definition"></a></dt>
+<dd><p>This function ‘guest_profil’ handles the back-end of the guest_profil page</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mariage</strong> (<em>str</em>) – name of the mariage of the guest accessing to its personnal profil</p></li>
+<li><p><strong>statut</strong> (<em>str</em>) – statut of the user</p></li>
+<li><p><strong>ident</strong> (<em>int</em>) – id of the user</p></li>
+<li><p><strong>full_name</strong> (<em>str</em>) – full name of the guest</p></li>
+<li><p><strong>guest_ident</strong> (<em>int</em>) – id of the guest</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Page of the guest’s personal profil</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>template</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Guest_route.log_guest">
+<span class="sig-prename descclassname"><span class="pre">src.Guest_route.</span></span><span class="sig-name descname"><span class="pre">log_guest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/Guest_route.html#log_guest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Guest_route.log_guest" title="Permalink to this definition"></a></dt>
+<dd><p>The function ‘log_guest’ handle the back-end of the ‘log_guest()’ form.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The same page if the informations are incorrect (not invited to the wedding, incorrect email or password)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>template</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Guest_route.login_required_id">
+<span class="sig-prename descclassname"><span class="pre">src.Guest_route.</span></span><span class="sig-name descname"><span class="pre">login_required_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ident_user</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/Guest_route.html#login_required_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Guest_route.login_required_id" title="Permalink to this definition"></a></dt>
+<dd><p>This wrap function restrain certain pages only to user that are connected.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ident_user</strong> (<em>int</em>) – id of the user</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Guest_route.player_reg">
+<span class="sig-prename descclassname"><span class="pre">src.Guest_route.</span></span><span class="sig-name descname"><span class="pre">player_reg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ident</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mariage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/Guest_route.html#player_reg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Guest_route.player_reg" title="Permalink to this definition"></a></dt>
+<dd><p>This function ‘player_reg’ handle the back-end of the ‘guest_login()’ form.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mariage</strong> (<em>str</em>) – name of the mariage of the guest accessing to its personal profile</p></li>
+<li><p><strong>ident</strong> (<em>int</em>) – id of the user</p></li>
+<li><p><strong>full_name</strong> (<em>str</em>) – full name of the player</p></li>
+<li><p><strong>email</strong> (<em>str</em>) – email of the player</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The same page if the informations are incorrect (not invited to the wedding, incorrect email or password)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>template</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Guest_route.player_reg_init">
+<span class="sig-prename descclassname"><span class="pre">src.Guest_route.</span></span><span class="sig-name descname"><span class="pre">player_reg_init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/Guest_route.html#player_reg_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Guest_route.player_reg_init" title="Permalink to this definition"></a></dt>
+<dd><p>The function ‘player_reg_init’ handle the back-end of the ‘player_reg_init()’ form.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The same page if the informations are incorrect (not invited to the wedding or incorrect email)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>template</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src.Guest_route.table_indiv">
+<span class="sig-prename descclassname"><span class="pre">src.Guest_route.</span></span><span class="sig-name descname"><span class="pre">table_indiv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statut</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ident</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mariage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">guest_ident</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/Guest_route.html#table_indiv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.Guest_route.table_indiv" title="Permalink to this definition"></a></dt>
+<dd><p>This function ‘table_indiv’ handles the back-end of the page accessible in the profile page that shows the table of the guest</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>statut</strong> (<em>str</em>) – statut of the user</p></li>
+<li><p><strong>mariage</strong> (<em>str</em>) – name of the mariage of the guest accessing to its personal profile</p></li>
+<li><p><strong>ident</strong> (<em>int</em>) – id of the user</p></li>
+<li><p><strong>guest_ident</strong> (<em>int</em>) – id of the guest</p></li>
+<li><p><strong>table</strong> – id of the user</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="src" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Orga_route.html" class="btn btn-neutral float-right" title="Orga_route module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Lucas Sautier - Pierre-Louis Le Goff - Nicolas Corvol - Garance Gérard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

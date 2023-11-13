@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<img id="fond_log" src="{{ url_for('static', filename='fond_info.jpg') }}" >
+
+<div id="register">
+    <h3 style="color: #000000;">Bonjour {{ full_name }}, merci de renseigner vos informations pour le mariage {{ mariage }}</h3><br><br>
+    
+    {% for message in messages %}
+        <div class="flash-message">{{ message }}</div>
+        {% set messages = messages[:loop.index] + messages[loop.index+1:] %}
+    {% endfor %}
+   
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+            {{ form.password.label(class="form-label") }}<br>
+            {{ form.password(class="form-input") }}<br>
+        </div>
+
+        <div class="form-group">
+            {{ form.age.label(class="form-label") }}<br>
+            {{ form.age(class="form-input") }}<br>
+        </div><br>
+
+        <div class="form-group">
+            {{ form.couple_situation.label(class="form-label") }}<br>
+            {% for subfield in  form.couple_situation %}
+                <tr>    
+                    <td>{{ subfield }}</td>
+                    <td>{{ subfield.label }}</td><br>
+                </tr>
+            {% endfor %}
+        </div><br>
+
+        <div class="form-group">
+            {{ form.partner_name.label(class="form-label") }}<br>
+                {{ form.partner_name(class="form-input") }}<br>
+        </div><br>
+
+        <div class="form-group">
+            {{ form.gender.label(class="form-label") }}<br>
+            {% for subfield in  form.gender %}
+                <tr>    
+                    <td>{{ subfield }}</td>
+                    <td>{{ subfield.label }}</td><br>
+                </tr>
+            {% endfor %} 
+        </div><br>
+
+        <div class="form-group">
+            {{ form.family.label(class="form-label") }}<br>
+            {% for subfield in  form.family %}
+                <tr>    
+                    <td>{{ subfield }}</td>
+                    <td>{{ subfield.label }}</td><br>
+                </tr>
+            {% endfor %}      
+        </div><br>
+
+        <div class="center">
+        Vous pouvez choisir 3 personnes avec qui vous souhaiteriez être placé. Nous essayerons, dans la mesure du possible de vous mettre au moins avec un de ces choix.
+        </div><br>
+
+        <div class="form-group">
+            {{ form.favorite_guest_1.label(class="form-label") }}<br>
+            {{ form.favorite_guest_1(class="form-input") }}
+        </div><br>
+
+        <div class="form-group">
+            {{ form.favorite_guest_2.label(class="form-label") }}<br>
+            {{ form.favorite_guest_2(class="form-input") }}
+        </div><br>
+
+        <div class="form-group">
+            {{ form.favorite_guest_3.label(class="form-label") }}<br>
+            {{ form.favorite_guest_3(class="form-input") }}
+        </div><br><br>
+
+        {{ form.submit(class='btn btn-primary') }}
+    </form>
+</div>
+
+{% endblock %} 

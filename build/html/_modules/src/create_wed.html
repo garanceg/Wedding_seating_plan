@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.create_wed &mdash; Event-Assignement 2023 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Event-Assignement
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Event-Assignement</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.create_wed</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.create_wed</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">faker</span> <span class="kn">import</span> <span class="n">Faker</span>
+<span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">ascii_lowercase</span>  <span class="c1"># to create the passwords</span>
+
+<span class="kn">from</span> <span class="nn">src.profil</span> <span class="kn">import</span> <span class="n">db</span><span class="p">,</span> <span class="n">Guest</span><span class="p">,</span> <span class="n">Player</span><span class="p">,</span><span class="n">Orga</span><span class="p">,</span> <span class="n">Tables</span>
+
+<span class="n">db</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>  <span class="c1"># connecting to data base</span>
+<span class="n">db</span><span class="o">.</span><span class="n">create_tables</span><span class="p">([</span><span class="n">Guest</span><span class="p">,</span> <span class="n">Player</span><span class="p">,</span> <span class="n">Orga</span><span class="p">,</span> <span class="n">Tables</span><span class="p">])</span>  <span class="c1">#creating the tables to fill them</span>
+
+<span class="n">fake</span> <span class="o">=</span> <span class="n">Faker</span><span class="p">()</span>  <span class="c1">#library of name, surname... to generate fake guests</span>
+
+
+<div class="viewcode-block" id="CreateMariage"><a class="viewcode-back" href="../../create_wed.html#src.create_wed.CreateMariage">[docs]</a><span class="k">class</span> <span class="nc">CreateMariage</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class allows the user to generate a random wedding .</span>
+
+<span class="sd">    :param nb_guest: the number of guest wanted for this random wedding</span>
+<span class="sd">    :type nb_guest: int</span>
+<span class="sd">    :param nb_capa_table: list of list of number of tables of a certain capacity : nb_table[i] = [n,m] : n tables of capacity m </span>
+<span class="sd">    :type nb_capa_table: list</span>
+<span class="sd">    :param mariage_name: the name of the wedding</span>
+<span class="sd">    :type mariage_name: str</span>
+<span class="sd">    :param nb_couple: the number of couples of this wedding</span>
+<span class="sd">    :type nb_couple: int </span>
+
+<span class="sd">    :ivar nb_guest: the number of guest wanted for this random wedding</span>
+<span class="sd">    :type nb_guest: int</span>
+<span class="sd">    :ivar nb_capa_table: list of list of number of tables of a certain capacity : nb_table[i] = [n,m] : n tables of capacity m </span>
+<span class="sd">    :type nb_capa_table: list</span>
+<span class="sd">    :ivar  mariage_name: the name of the wedding</span>
+<span class="sd">    :type mariage_name: str</span>
+<span class="sd">    :ivar nb_couple: the number of couples of this wedding</span>
+<span class="sd">    :type nb_couple: int </span>
+<span class="sd">    :ivar gender_guest: list of the gender of the guest : gender[i] = gender of guest i</span>
+<span class="sd">    :type gender_list: list</span>
+<span class="sd">    :ivar ident_guest: list of id of the guest of this wedding</span>
+<span class="sd">    :type ident_guets: list  </span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">nb_guest</span><span class="p">,</span> <span class="n">nb_table_capa</span><span class="p">,</span> <span class="n">mariage_name</span><span class="p">,</span> <span class="n">nb_couple</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span> <span class="o">=</span> <span class="n">nb_guest</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb_table_capa</span> <span class="o">=</span> <span class="n">nb_table_capa</span>  <span class="c1"># list : nb_table[i] = [n,m] : n tables de capacite m </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mariage_name</span> <span class="o">=</span> <span class="n">mariage_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb_couple</span> <span class="o">=</span> <span class="n">nb_couple</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gender_guest</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ident_guest</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">):</span>
+            <span class="n">gender</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gender_guest</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gender</span><span class="p">)</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">fake</span><span class="o">.</span><span class="n">first_name_male</span><span class="p">()</span> <span class="k">if</span> <span class="n">gender</span><span class="o">==</span><span class="mi">1</span> <span class="k">else</span> <span class="n">fake</span><span class="o">.</span><span class="n">first_name_female</span><span class="p">()</span>
+            <span class="n">surname</span> <span class="o">=</span> <span class="n">fake</span><span class="o">.</span><span class="n">last_name</span><span class="p">()</span>
+            <span class="n">guest</span> <span class="o">=</span> <span class="n">Guest</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">name</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span>
+                <span class="n">surname</span> <span class="o">=</span> <span class="n">surname</span><span class="p">,</span>
+                <span class="n">email</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">surname</span> <span class="o">+</span> <span class="s2">&quot;@gmail.com&quot;</span><span class="p">),</span> 
+                <span class="n">mariage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mariage_name</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ident_guest</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">guest</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+            <span class="n">guest</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="CreateMariage.create_player"><a class="viewcode-back" href="../../create_wed.html#src.create_wed.CreateMariage.create_player">[docs]</a>    <span class="k">def</span> <span class="nf">create_player</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method creates the player with random caracteristics for this random wedding.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: NoneType </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Creation of a random couple list :</span>
+        <span class="n">rdm_id</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ident_guest</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">ident_guest</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_couple</span><span class="p">)</span>  <span class="c1"># choosing id for people in a couple</span>
+        <span class="n">rdm_couple</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">rdm_id</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">rdm_couple</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">rdm_id</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">rdm_id</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]])</span>  <span class="c1"># couple assignement </span>
+        
+        <span class="n">iteration</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ident_guest</span><span class="p">:</span>
+            <span class="n">guest_i</span> <span class="o">=</span> <span class="n">Guest</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Guest</span><span class="o">.</span><span class="n">id</span><span class="o">==</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">partner_name</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">couple_situation</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">age</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">70</span><span class="p">)</span>
+            <span class="n">family</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">family</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">rdm_fav_g</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ident_guest</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="bp">self</span><span class="o">.</span><span class="n">ident_guest</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">couple</span> <span class="ow">in</span> <span class="n">rdm_couple</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">couple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">:</span>
+                    <span class="n">couple_situation</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="n">partner_name</span> <span class="o">=</span> <span class="n">couple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">age</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">70</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">couple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">i</span><span class="p">:</span>
+                    <span class="n">couple_situation</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="n">partner_name</span> <span class="o">=</span> <span class="n">couple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">age</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">70</span><span class="p">)</span>
+            <span class="n">password</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">ascii_lowercase</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">))</span>  <span class="c1"># should be a hash but too long to import and unused... </span>
+            <span class="n">player_i</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">mariage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mariage_name</span><span class="p">,</span>
+                <span class="nb">id</span> <span class="o">=</span> <span class="n">guest_i</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+                <span class="n">email</span> <span class="o">=</span> <span class="n">guest_i</span><span class="o">.</span><span class="n">email</span><span class="p">,</span>
+                <span class="n">password</span> <span class="o">=</span> <span class="n">password</span><span class="p">,</span>
+                <span class="n">age</span> <span class="o">=</span> <span class="n">age</span><span class="p">,</span>
+                <span class="n">couple_situation</span> <span class="o">=</span> <span class="n">couple_situation</span><span class="p">,</span>
+                <span class="n">partner_name</span> <span class="o">=</span> <span class="n">partner_name</span><span class="p">,</span>
+                <span class="n">gender</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gender_guest</span><span class="p">[</span><span class="n">iteration</span><span class="p">],</span>
+                <span class="n">family</span> <span class="o">=</span> <span class="n">family</span><span class="p">,</span>
+                <span class="n">favorite_guest_1</span> <span class="o">=</span> <span class="n">rdm_fav_g</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">favorite_guest_2</span> <span class="o">=</span> <span class="n">rdm_fav_g</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="n">favorite_guest_3</span> <span class="o">=</span> <span class="n">rdm_fav_g</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">player_i</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="n">iteration</span> <span class="o">+=</span><span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="CreateMariage.create_tables"><a class="viewcode-back" href="../../create_wed.html#src.create_wed.CreateMariage.create_tables">[docs]</a>    <span class="k">def</span> <span class="nf">create_tables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method creates the tables for this random wedding.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: NoneType </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_table_capa</span><span class="p">:</span>
+            <span class="n">table_i</span> <span class="o">=</span> <span class="n">Tables</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                <span class="n">mariage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mariage_name</span><span class="p">,</span>
+                <span class="n">number</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">capacity</span> <span class="o">=</span> <span class="n">table</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">table_i</span><span class="o">.</span><span class="n">save</span><span class="p">()</span></div>
+
+            
+<div class="viewcode-block" id="CreateMariage.rdm_is_not_coming"><a class="viewcode-back" href="../../create_wed.html#src.create_wed.CreateMariage.rdm_is_not_coming">[docs]</a>    <span class="k">def</span> <span class="nf">rdm_is_not_coming</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nb_not_coming</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method deletes randomly a certain number of player of this random wedding.</span>
+
+<span class="sd">        :param nb_not_coming: the number of guest who are not coming to the wedding</span>
+<span class="sd">        :type nb_not_coming: int</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: NoneType </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">isnt_coming</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ident_guest</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">ident_guest</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]),</span> <span class="n">nb_not_coming</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ident</span> <span class="ow">in</span> <span class="n">isnt_coming</span><span class="p">:</span> 
+            <span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">ident</span><span class="p">)</span>
+            <span class="n">player</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">()</span></div>
+    
+
+<div class="viewcode-block" id="CreateMariage.first_guest_isnt_coming"><a class="viewcode-back" href="../../create_wed.html#src.create_wed.CreateMariage.first_guest_isnt_coming">[docs]</a>    <span class="k">def</span> <span class="nf">first_guest_isnt_coming</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mariage_name</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="n">email</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">email</span>
+        <span class="n">player</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">email</span></div>
+    
+
+<div class="viewcode-block" id="CreateMariage.guest_not_in_couple_isnt_coming"><a class="viewcode-back" href="../../create_wed.html#src.create_wed.CreateMariage.guest_not_in_couple_isnt_coming">[docs]</a>    <span class="k">def</span> <span class="nf">guest_not_in_couple_isnt_coming</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">Player</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mariage_name</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">couple_situation</span> <span class="o">==</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+        <span class="n">email</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">email</span>
+        <span class="n">player</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">email</span></div>
+        
+    
+<div class="viewcode-block" id="CreateMariage.delete_mar"><a class="viewcode-back" href="../../create_wed.html#src.create_wed.CreateMariage.delete_mar">[docs]</a>    <span class="k">def</span> <span class="nf">delete_mar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method deletes the wedding</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: NoneType </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query_g</span> <span class="o">=</span> <span class="n">Guest</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Guest</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mariage_name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">guest</span> <span class="ow">in</span> <span class="n">query_g</span><span class="p">:</span> 
+            <span class="n">guest</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">()</span>
+
+        <span class="n">query_p</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mariage_name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">query_p</span><span class="p">:</span> 
+            <span class="n">player</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">()</span>
+
+        <span class="n">query_t</span> <span class="o">=</span> <span class="n">Tables</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Tables</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mariage_name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">query_t</span><span class="p">:</span> 
+            <span class="n">table</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">()</span></div></div>
+
+
+<span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Lucas Sautier - Pierre-Louis Le Goff - Nicolas Corvol - Garance Gérard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

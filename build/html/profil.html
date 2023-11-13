@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>profil module &mdash; Event-Assignement 2023 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="send_email module" href="send_email.html" />
+    <link rel="prev" title="main module" href="main.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Event-Assignement
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Guest_route.html">Guest_route module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Orga_route.html">Orga_route module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RO.html">RO module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create_wed.html">create_wed module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="form.html">form module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">profil module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="send_email.html">send_email module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Event-Assignement</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">src</a></li>
+      <li class="breadcrumb-item active">profil module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/profil.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.profil">
+<span id="profil-module"></span><h1>profil module<a class="headerlink" href="#module-src.profil" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.profil.BaseModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.profil.</span></span><span class="sig-name descname"><span class="pre">BaseModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#BaseModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.BaseModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.BaseModel.DoesNotExist">
+<span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#src.profil.BaseModel.DoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModelDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.BaseModel.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;AutoField:</span> <span class="pre">BaseModel.id&gt;</span></em><a class="headerlink" href="#src.profil.BaseModel.id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.profil.Guest">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.profil.</span></span><span class="sig-name descname"><span class="pre">Guest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Guest"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Guest" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.profil.BaseModel" title="src.profil.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Storing infomations about a guest of a wedding</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Guest.DoesNotExist">
+<span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#src.profil.Guest.DoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">GuestDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Guest.email">
+<span class="sig-name descname"><span class="pre">email</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Guest.email&gt;</span></em><a class="headerlink" href="#src.profil.Guest.email" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Guest.full_name">
+<span class="sig-name descname"><span class="pre">full_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Guest.full_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Guest.full_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the full name of the guest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the full name of a wedding guest</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Guest.get_guest_mail">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_guest_mail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mariage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Guest.get_guest_mail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Guest.get_guest_mail" title="Permalink to this definition"></a></dt>
+<dd><p>Get the corresponding guest for a given marriage and email.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mariage</strong> (<em>char</em>) – name of the wedding</p></li>
+<li><p><strong>email</strong> (<em>char</em>) – email of the guest</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Guest.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;AutoField:</span> <span class="pre">Guest.id&gt;</span></em><a class="headerlink" href="#src.profil.Guest.id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Guest.mariage">
+<span class="sig-name descname"><span class="pre">mariage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Guest.mariage&gt;</span></em><a class="headerlink" href="#src.profil.Guest.mariage" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Guest.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Guest.name&gt;</span></em><a class="headerlink" href="#src.profil.Guest.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Guest.surname">
+<span class="sig-name descname"><span class="pre">surname</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Guest.surname&gt;</span></em><a class="headerlink" href="#src.profil.Guest.surname" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.profil.Orga">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.profil.</span></span><span class="sig-name descname"><span class="pre">Orga</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Orga"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Orga" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.profil.BaseModel" title="src.profil.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Storing infomations about the organizer of a wedding</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Orga.DoesNotExist">
+<span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#src.profil.Orga.DoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">OrgaDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Orga.bride_full_name">
+<span class="sig-name descname"><span class="pre">bride_full_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Orga.bride_full_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Orga.bride_full_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the full name of the bride.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the full name of the bride</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Orga.bride_name">
+<span class="sig-name descname"><span class="pre">bride_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Orga.bride_name&gt;</span></em><a class="headerlink" href="#src.profil.Orga.bride_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Orga.bride_surname">
+<span class="sig-name descname"><span class="pre">bride_surname</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Orga.bride_surname&gt;</span></em><a class="headerlink" href="#src.profil.Orga.bride_surname" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Orga.email">
+<span class="sig-name descname"><span class="pre">email</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Orga.email&gt;</span></em><a class="headerlink" href="#src.profil.Orga.email" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Orga.get_orga_mail">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_orga_mail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mariage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Orga.get_orga_mail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Orga.get_orga_mail" title="Permalink to this definition"></a></dt>
+<dd><p>Get the wedding organizer for the given marriage and email.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mariage</strong> (<em>char</em>) – name of the wedding</p></li>
+<li><p><strong>email</strong> (<em>char</em>) – email of the organizer</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Orga.get_orga_mariage">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_orga_mariage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mariage</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Orga.get_orga_mariage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Orga.get_orga_mariage" title="Permalink to this definition"></a></dt>
+<dd><p>Get the wedding organizer for the given marriage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mariage</strong> (<em>char</em>) – name of the wedding</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Orga.groom_full_name">
+<span class="sig-name descname"><span class="pre">groom_full_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Orga.groom_full_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Orga.groom_full_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the full name of the groom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the full name of the groom</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Orga.groom_name">
+<span class="sig-name descname"><span class="pre">groom_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Orga.groom_name&gt;</span></em><a class="headerlink" href="#src.profil.Orga.groom_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Orga.groom_surname">
+<span class="sig-name descname"><span class="pre">groom_surname</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Orga.groom_surname&gt;</span></em><a class="headerlink" href="#src.profil.Orga.groom_surname" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Orga.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;AutoField:</span> <span class="pre">Orga.id&gt;</span></em><a class="headerlink" href="#src.profil.Orga.id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Orga.mariage">
+<span class="sig-name descname"><span class="pre">mariage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Orga.mariage&gt;</span></em><a class="headerlink" href="#src.profil.Orga.mariage" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Orga.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Orga.name&gt;</span></em><a class="headerlink" href="#src.profil.Orga.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Orga.orga_full_name">
+<span class="sig-name descname"><span class="pre">orga_full_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Orga.orga_full_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Orga.orga_full_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the full name of the organizer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The player’s name and surname separated by a space.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Orga.password">
+<span class="sig-name descname"><span class="pre">password</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Orga.password&gt;</span></em><a class="headerlink" href="#src.profil.Orga.password" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Orga.surname">
+<span class="sig-name descname"><span class="pre">surname</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Orga.surname&gt;</span></em><a class="headerlink" href="#src.profil.Orga.surname" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.profil.Player">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.profil.</span></span><span class="sig-name descname"><span class="pre">Player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Player"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Player" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.profil.BaseModel" title="src.profil.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Storing infomations about a guest who is coming to the wedding. He is called a player.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Player.DoesNotExist">
+<span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#src.profil.Player.DoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">PlayerDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Player.age">
+<span class="sig-name descname"><span class="pre">age</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;IntegerField:</span> <span class="pre">Player.age&gt;</span></em><a class="headerlink" href="#src.profil.Player.age" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Player.called_gender">
+<span class="sig-name descname"><span class="pre">called_gender</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Player.called_gender"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Player.called_gender" title="Permalink to this definition"></a></dt>
+<dd><p>Get the called gender according to the player’s gender.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>“Masculin” if the player is male, “Feminin” if female</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Player.color">
+<span class="sig-name descname"><span class="pre">color</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Player.color"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Player.color" title="Permalink to this definition"></a></dt>
+<dd><p>Gives the color corresponding to the satisfaction score of the player.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Player.couple_situation">
+<span class="sig-name descname"><span class="pre">couple_situation</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;IntegerField:</span> <span class="pre">Player.couple_situation&gt;</span></em><a class="headerlink" href="#src.profil.Player.couple_situation" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Player.email">
+<span class="sig-name descname"><span class="pre">email</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Player.email&gt;</span></em><a class="headerlink" href="#src.profil.Player.email" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Player.family">
+<span class="sig-name descname"><span class="pre">family</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;IntegerField:</span> <span class="pre">Player.family&gt;</span></em><a class="headerlink" href="#src.profil.Player.family" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Player.favorite_guest_1">
+<span class="sig-name descname"><span class="pre">favorite_guest_1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;IntegerField:</span> <span class="pre">Player.favorite_guest_1&gt;</span></em><a class="headerlink" href="#src.profil.Player.favorite_guest_1" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Player.favorite_guest_2">
+<span class="sig-name descname"><span class="pre">favorite_guest_2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;IntegerField:</span> <span class="pre">Player.favorite_guest_2&gt;</span></em><a class="headerlink" href="#src.profil.Player.favorite_guest_2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Player.favorite_guest_3">
+<span class="sig-name descname"><span class="pre">favorite_guest_3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;IntegerField:</span> <span class="pre">Player.favorite_guest_3&gt;</span></em><a class="headerlink" href="#src.profil.Player.favorite_guest_3" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Player.full_name">
+<span class="sig-name descname"><span class="pre">full_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Player.full_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Player.full_name" title="Permalink to this definition"></a></dt>
+<dd><p>Get the full name of the player.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The player’s name and surname separated by a space.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Player.gender">
+<span class="sig-name descname"><span class="pre">gender</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;IntegerField:</span> <span class="pre">Player.gender&gt;</span></em><a class="headerlink" href="#src.profil.Player.gender" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Player.get_player_id">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_player_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ident</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Player.get_player_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Player.get_player_id" title="Permalink to this definition"></a></dt>
+<dd><p>Get the corresponding player for a given id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>id</strong> (<em>int</em>) – player’s id</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Player.get_player_mail">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_player_mail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mariage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">email</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Player.get_player_mail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Player.get_player_mail" title="Permalink to this definition"></a></dt>
+<dd><p>Get the corresponding player for a given wedding and a given email.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mariage</strong> – wedding name</p></li>
+<li><p><strong>email</strong> – player’s mail</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Player.has_a_table">
+<span class="sig-name descname"><span class="pre">has_a_table</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Player.has_a_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Player.has_a_table" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the player has a table for the wedding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the player has a table, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Player.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;IntegerField:</span> <span class="pre">Player.id&gt;</span></em><a class="headerlink" href="#src.profil.Player.id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Player.is_coming">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_coming</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ident</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mar</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Player.is_coming"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Player.is_coming" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the player with id ident is coming to the wedding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ident</strong> (<em>int</em>) – id of the player</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>1 if the player is coming, 0 otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Player.mariage">
+<span class="sig-name descname"><span class="pre">mariage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Player.mariage&gt;</span></em><a class="headerlink" href="#src.profil.Player.mariage" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Player.mr_or_miss">
+<span class="sig-name descname"><span class="pre">mr_or_miss</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Player.mr_or_miss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Player.mr_or_miss" title="Permalink to this definition"></a></dt>
+<dd><p>Get the title according to the player’s gender.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>“Monsieur” if the player is male, “Madame” if female</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Player.name_of_fav_1">
+<span class="sig-name descname"><span class="pre">name_of_fav_1</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Player.name_of_fav_1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Player.name_of_fav_1" title="Permalink to this definition"></a></dt>
+<dd><p>Get the full name of the player’s first favorite guest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The first favorite guest’s name and surname separated by a space. “Pas de personne favorite” if the player does not have a first favorite guest.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Player.name_of_fav_2">
+<span class="sig-name descname"><span class="pre">name_of_fav_2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Player.name_of_fav_2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Player.name_of_fav_2" title="Permalink to this definition"></a></dt>
+<dd><p>Get the full name of the player’s second favorite guest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The second favorite guest’s name and surname separated by a space. “Pas de personne favorite” if the player does not have a second favorite guest.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Player.name_of_fav_3">
+<span class="sig-name descname"><span class="pre">name_of_fav_3</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Player.name_of_fav_3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Player.name_of_fav_3" title="Permalink to this definition"></a></dt>
+<dd><p>Get the full name of the player’s third favorite guest.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The third favorite guest’s name and surname separated by a space. “Pas de personne favorite” if the player does not have a third favorite guest.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Player.name_of_partner">
+<span class="sig-name descname"><span class="pre">name_of_partner</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Player.name_of_partner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Player.name_of_partner" title="Permalink to this definition"></a></dt>
+<dd><p>Get the full name of the player’s partner.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The partner’s name and surname separated by a space. “Pas en couple” if the player is not in a couple.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Player.number_of_player">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">number_of_player</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mariage</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Player.number_of_player"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Player.number_of_player" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Player.partner_name">
+<span class="sig-name descname"><span class="pre">partner_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;IntegerField:</span> <span class="pre">Player.partner_name&gt;</span></em><a class="headerlink" href="#src.profil.Player.partner_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Player.password">
+<span class="sig-name descname"><span class="pre">password</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Player.password&gt;</span></em><a class="headerlink" href="#src.profil.Player.password" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Player.same_table">
+<span class="sig-name descname"><span class="pre">same_table</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ident</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Player.same_table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Player.same_table" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the player is at the same table of the player’s ident given.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if they are at the same table, False otherwise. It returns a message if the player is not valid.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Player.satisfaction">
+<span class="sig-name descname"><span class="pre">satisfaction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Player.satisfaction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Player.satisfaction" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the satisfaction score of the player based on their seating arrangements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The satisfaction score of the player.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Player.table">
+<span class="sig-name descname"><span class="pre">table</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;IntegerField:</span> <span class="pre">Player.table&gt;</span></em><a class="headerlink" href="#src.profil.Player.table" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.profil.Tables">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.profil.</span></span><span class="sig-name descname"><span class="pre">Tables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Tables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Tables" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#src.profil.BaseModel" title="src.profil.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<p>Storing infomations about the wedding’s tables.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Tables.DoesNotExist">
+<span class="sig-name descname"><span class="pre">DoesNotExist</span></span><a class="headerlink" href="#src.profil.Tables.DoesNotExist" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal notranslate"><span class="pre">TablesDoesNotExist</span></code></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Tables.capacity">
+<span class="sig-name descname"><span class="pre">capacity</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;IntegerField:</span> <span class="pre">Tables.capacity&gt;</span></em><a class="headerlink" href="#src.profil.Tables.capacity" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Tables.get_table_capa">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_table_capa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mariage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">capacity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Tables.get_table_capa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Tables.get_table_capa" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Tables.id">
+<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;AutoField:</span> <span class="pre">Tables.id&gt;</span></em><a class="headerlink" href="#src.profil.Tables.id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.profil.Tables.is_empty">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_empty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mariage</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/profil.html#Tables.is_empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.profil.Tables.is_empty" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Tables.mariage">
+<span class="sig-name descname"><span class="pre">mariage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;CharField:</span> <span class="pre">Tables.mariage&gt;</span></em><a class="headerlink" href="#src.profil.Tables.mariage" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.profil.Tables.number">
+<span class="sig-name descname"><span class="pre">number</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;IntegerField:</span> <span class="pre">Tables.number&gt;</span></em><a class="headerlink" href="#src.profil.Tables.number" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="main.html" class="btn btn-neutral float-left" title="main module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="send_email.html" class="btn btn-neutral float-right" title="send_email module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Lucas Sautier - Pierre-Louis Le Goff - Nicolas Corvol - Garance Gérard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RO &mdash; Event-Assignement 2023 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Event-Assignement
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Event-Assignement</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">RO</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for RO</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>                                        
+<span class="kn">from</span> <span class="nn">gurobipy</span> <span class="kn">import</span> <span class="n">GRB</span><span class="p">,</span> <span class="n">quicksum</span>
+<span class="kn">import</span> <span class="nn">gurobipy</span>   
+<span class="kn">import</span> <span class="nn">random</span>       
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span> <span class="nn">pylint</span>
+
+<span class="kn">from</span> <span class="nn">profil</span> <span class="kn">import</span> <span class="n">db</span><span class="p">,</span> <span class="n">Orga</span><span class="p">,</span> <span class="n">Tables</span><span class="p">,</span> <span class="n">Guest</span><span class="p">,</span> <span class="n">Player</span>
+<span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="n">db</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+<span class="n">db</span><span class="o">.</span><span class="n">create_tables</span><span class="p">([</span> <span class="n">Guest</span><span class="p">,</span> <span class="n">Player</span><span class="p">,</span> <span class="n">Orga</span><span class="p">,</span> <span class="n">Tables</span><span class="p">])</span>
+
+<div class="viewcode-block" id="Table"><a class="viewcode-back" href="../RO.html#RO.Table">[docs]</a><span class="k">class</span> <span class="nc">Table</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class represents a table in the wedding.</span>
+
+<span class="sd">    :param capacity: the capacity of a table</span>
+<span class="sd">    :type capacity: int </span>
+<span class="sd">    :param id: </span>
+<span class="sd">    :type id: int</span>
+<span class="sd">    :param mariage: name of the wedding</span>
+<span class="sd">    :type mariage: char</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">capacity</span><span class="p">,</span> <span class="n">mariage</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C</span> <span class="o">=</span> <span class="n">capacity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb_free_seats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">guests_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mariage</span> <span class="o">=</span> <span class="n">mariage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pt</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="Table.add_guest"><a class="viewcode-back" href="../RO.html#RO.Table.add_guest">[docs]</a>    <span class="k">def</span> <span class="nf">add_guest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function &#39;add_guest&#39; adds the guest i to the table. It checks if the table max capacity isn&#39;t reached. </span>
+<span class="sd">        If there is no seat left, then it raises an OverflowError. It updates the number of free seats left.</span>
+
+<span class="sd">        :param i: id of the guest to add to the table </span>
+<span class="sd">        :type i: int</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_free_seats</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">OverflowError</span><span class="p">(</span><span class="s2">&quot;Maximum capacity for table &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; reached !&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">guests_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb_free_seats</span> <span class="o">-=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="Table.remove_guest"><a class="viewcode-back" href="../RO.html#RO.Table.remove_guest">[docs]</a>    <span class="k">def</span> <span class="nf">remove_guest</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function &#39;remove_guest&#39; removes the guest i from the table. It checks if the table isn&#39;t empty initially and if the</span>
+<span class="sd">        guest to remove is at this table initially. It updates the number of free seats left.</span>
+
+<span class="sd">        :param i: id of the guest to remove from the table </span>
+<span class="sd">        :type i: int</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_free_seats</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">C</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Table &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot; is already empty !&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">guests_list</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Guest &quot;</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="s2">&quot; cannot be remove as &quot;</span><span class="o">+</span><span class="n">i</span><span class="o">+</span><span class="s2">&quot; not at table &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">guests_list</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb_free_seats</span> <span class="o">+=</span> <span class="mi">1</span></div></div>
+    
+
+<div class="viewcode-block" id="Event"><a class="viewcode-back" href="../RO.html#RO.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class creates the tables of the wedding according to the number of tables of each capacity available for the event.</span>
+<span class="sd">    It contains a list of the capacity of each table and a list containing all the instances tables of the event.</span>
+
+<span class="sd">    :param mariage: name of the wedding</span>
+<span class="sd">    :type mariage: char</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mariage</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mariage</span> <span class="o">=</span> <span class="n">mariage</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table_capacity_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb_seats</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">Tables</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Tables</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mariage</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span> 
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">number</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">table_capacity_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">table</span><span class="o">.</span><span class="n">capacity</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">nb_seats</span> <span class="o">+=</span> <span class="n">table</span><span class="o">.</span><span class="n">capacity</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">table_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">table_capacity_list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">table_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Table</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">mariage</span><span class="p">))</span></div>
+    
+
+<div class="viewcode-block" id="Abstract_solver"><a class="viewcode-back" href="../RO.html#RO.Abstract_solver">[docs]</a><span class="k">class</span> <span class="nc">Abstract_solver</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class contains all the methods needed to use the MILP solver.</span>
+
+<span class="sd">    :param event: event on which we want to generate a table plan</span>
+<span class="sd">    :type event: instance</span>
+<span class="sd">    :param mariage: name of the wedding</span>
+<span class="sd">    :type mariage: char</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">mariage</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb_table</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">table_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table_list</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">table_list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb_seats</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">nb_seats</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">table_guest</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># seating plan is empty at the beginning</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mariage</span> <span class="o">=</span> <span class="n">mariage</span>
+    
+    
+<div class="viewcode-block" id="Abstract_solver.player_list_ident"><a class="viewcode-back" href="../RO.html#RO.Abstract_solver.player_list_ident">[docs]</a>    <span class="k">def</span> <span class="nf">player_list_ident</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns a list of the players attended to the wedding.</span>
+
+<span class="sd">        :return: the id of the players attended to the wedding that we need to place on the tables. </span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">L_id</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mariage</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+            <span class="n">L_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">L_id</span></div>
+
+
+<div class="viewcode-block" id="Abstract_solver.couple_matrix"><a class="viewcode-back" href="../RO.html#RO.Abstract_solver.couple_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">couple_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns the couple matrix containing 1 on line i column j if i is in couple with j.</span>
+
+<span class="sd">        :return: matrix of the couples</span>
+<span class="sd">        :rtype: array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">player_ident</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_list_ident</span><span class="p">()</span>
+        <span class="n">nb_player</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player_list_ident</span><span class="p">())</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nb_player</span><span class="p">,</span><span class="n">nb_player</span><span class="p">))</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">couple_situation</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">mariage</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+            <span class="n">partner</span> <span class="o">=</span> <span class="n">Guest</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Guest</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">player</span><span class="o">.</span><span class="n">partner_name</span><span class="p">)</span> <span class="c1"># player&#39;s partner is partner (in guest because maybe the partner has not filled the form yet)</span>
+            <span class="k">if</span> <span class="n">partner</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">player_ident</span><span class="p">:</span>     
+                <span class="c1"># filling the matrix</span>
+                <span class="n">i</span> <span class="o">=</span> <span class="n">player_ident</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="n">j</span> <span class="o">=</span> <span class="n">player_ident</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">partner</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+                <span class="n">matrix</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> 
+                <span class="n">matrix</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">matrix</span></div>
+
+<div class="viewcode-block" id="Abstract_solver.favorite_guest_matrix"><a class="viewcode-back" href="../RO.html#RO.Abstract_solver.favorite_guest_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">favorite_guest_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns the choices matrix containing 1, 2 or 3 on line i column j if guest i wants to be placed with </span>
+<span class="sd">        guest j with a preference of 3, 2 or 1.</span>
+
+<span class="sd">        :return: matrix of the choices</span>
+<span class="sd">        :rtype: array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">player_ident</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_list_ident</span><span class="p">()</span>
+        <span class="n">nb_player</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player_list_ident</span><span class="p">())</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nb_player</span><span class="p">,</span><span class="n">nb_player</span><span class="p">))</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span> 
+            <span class="k">if</span> <span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">favorite_guest_1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">favorite_guest_1</span><span class="p">)</span> <span class="ow">in</span> <span class="n">player_ident</span><span class="p">:</span>
+                <span class="n">matrix</span><span class="p">[</span><span class="n">player_ident</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">id</span><span class="p">)][</span><span class="n">player_ident</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">favorite_guest_1</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">3</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">favorite_guest_2</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">favorite_guest_2</span><span class="p">)</span> <span class="ow">in</span> <span class="n">player_ident</span><span class="p">:</span>
+                <span class="n">matrix</span><span class="p">[</span><span class="n">player_ident</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">id</span><span class="p">)][</span><span class="n">player_ident</span><span class="o">.</span><span class="n">index</span><span class="p">((</span><span class="n">player</span><span class="o">.</span><span class="n">favorite_guest_2</span><span class="p">))]</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">favorite_guest_3</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">favorite_guest_3</span><span class="p">)</span> <span class="ow">in</span> <span class="n">player_ident</span><span class="p">:</span>
+                <span class="n">matrix</span><span class="p">[</span><span class="n">player_ident</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">id</span><span class="p">)][</span><span class="n">player_ident</span><span class="o">.</span><span class="n">index</span><span class="p">((</span><span class="n">player</span><span class="o">.</span><span class="n">favorite_guest_3</span><span class="p">))]</span> <span class="o">=</span> <span class="mi">1</span>        
+        <span class="k">return</span> <span class="n">matrix</span></div>
+
+    
+<div class="viewcode-block" id="Abstract_solver.gender_list"><a class="viewcode-back" href="../RO.html#RO.Abstract_solver.gender_list">[docs]</a>    <span class="k">def</span> <span class="nf">gender_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns the gender of the players attended to the wedding.</span>
+
+<span class="sd">        :return: list of the gender of the players</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">player_ident</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_list_ident</span><span class="p">()</span>
+        <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ident</span> <span class="ow">in</span> <span class="n">player_ident</span><span class="p">:</span>
+            <span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">ident</span><span class="p">)</span> 
+            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">gender</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span></div>
+
+<div class="viewcode-block" id="Abstract_solver.family_list"><a class="viewcode-back" href="../RO.html#RO.Abstract_solver.family_list">[docs]</a>    <span class="k">def</span> <span class="nf">family_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns whether the groom or thr bride invited the player attended to the wedding.</span>
+
+<span class="sd">        :return: list of who invited each players</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">player_ident</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_list_ident</span><span class="p">()</span>
+        <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ident</span> <span class="ow">in</span> <span class="n">player_ident</span><span class="p">:</span>
+            <span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">ident</span><span class="p">)</span> 
+            <span class="nb">list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">family</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span></div>
+    
+
+<div class="viewcode-block" id="Abstract_solver.seating_plan"><a class="viewcode-back" href="../RO.html#RO.Abstract_solver.seating_plan">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">seating_plan</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div></div>
+
+
+<div class="viewcode-block" id="Random_solver"><a class="viewcode-back" href="../RO.html#RO.Random_solver">[docs]</a><span class="k">class</span> <span class="nc">Random_solver</span><span class="p">(</span><span class="n">Abstract_solver</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class generates a seating plan randomly without constraints. It inherits from the class Abstract_solver.</span>
+
+<span class="sd">    :param event: event on which we will generate the seating plan</span>
+<span class="sd">    :type event: instance</span>
+<span class="sd">    :param mariage: name of the wedding</span>
+<span class="sd">    :type mariage: char</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">mariage</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">mariage</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Random_solver.seating_plan"><a class="viewcode-back" href="../RO.html#RO.Random_solver.seating_plan">[docs]</a>    <span class="k">def</span> <span class="nf">seating_plan</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method generates a random seating plan for the event.</span>
+
+<span class="sd">        :return: list of list of guests placed on each table.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">guest_to_seat</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">guest_to_seat</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+            <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">table_list</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">t</span><span class="o">.</span><span class="n">nb_free_seats</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">t</span><span class="o">.</span><span class="n">add_guest</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">table_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">table_guest</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">guests_list</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">table_guest</span><span class="p">]</span></div></div>
+               
+
+<div class="viewcode-block" id="PLNE_solver"><a class="viewcode-back" href="../RO.html#RO.PLNE_solver">[docs]</a><span class="k">class</span> <span class="nc">PLNE_solver</span><span class="p">(</span><span class="n">Abstract_solver</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class generates the seating plan with respect to the constraints of gender parity, equilibrium between the families of</span>
+<span class="sd">    origin, of couples, of seating preferences.</span>
+
+<span class="sd">    :param event: event on which we will generate the seating plan</span>
+<span class="sd">    :type event: instance</span>
+<span class="sd">    :param mariage: name of the wedding</span>
+<span class="sd">    :type mariage: char</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">mariage</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">mariage</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_list_ident</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player_list_ident</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">couple</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">couple_matrix</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">choice</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">favorite_guest_matrix</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gender</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gender_list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">family</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">family_list</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="PLNE_solver.seating_plan"><a class="viewcode-back" href="../RO.html#RO.PLNE_solver.seating_plan">[docs]</a>    <span class="k">def</span> <span class="nf">seating_plan</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>  
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The method &quot;seating_plan&quot; uses gurobi solver to execute the MILP in order to generate the table seating plan from the event.</span>
+
+<span class="sd">        :return: the optimum solution of the MILP with the name of the players placed on each table of the wedding.</span>
+<span class="sd">        :rtype: list</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">## first, we try if the model is feasible or not : </span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_seats</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_seats</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_seats</span><span class="p">]]</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">gurobipy</span><span class="o">.</span><span class="n">Model</span><span class="p">();</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="p">{}</span>
+        
+        <span class="n">m</span><span class="o">.</span><span class="n">setParam</span><span class="p">(</span><span class="s1">&#39;MIPGap&#39;</span><span class="p">,</span> <span class="mf">0.0045</span><span class="p">)</span>
+
+        <span class="c1">#creation of the variables</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_table</span><span class="p">):</span>
+                <span class="c1"># x[i, k] = 1 if guest i is at table k</span>
+                <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">addVar</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;,&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="n">vtype</span> <span class="o">=</span> <span class="n">GRB</span><span class="o">.</span><span class="n">INTEGER</span><span class="p">,</span> <span class="n">lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ub</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> 
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">:</span>
+                    <span class="c1"># y[i, j, k]= 1 if guest i and j are in a couple and both at table k</span>
+                    <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">addVar</span><span class="p">(</span><span class="n">vtype</span> <span class="o">=</span> <span class="n">GRB</span><span class="o">.</span><span class="n">INTEGER</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="n">lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ub</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> 
+                    <span class="c1"># z[i, j, k] = 1 2 or 3 if guest i wanted to be a the same table as guest j with preference 3 2 or 1 and i and j are table k </span>
+                    <span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">addVar</span><span class="p">(</span><span class="n">vtype</span> <span class="o">=</span> <span class="n">GRB</span><span class="o">.</span><span class="n">INTEGER</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;z&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="n">lb</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ub</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span> 
+                    
+        <span class="c1"># objective function</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">setObjective</span><span class="p">(</span><span class="n">quicksum</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">+</span> <span class="mi">20</span><span class="o">*</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_list</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_list</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_table</span><span class="p">)),</span> <span class="n">GRB</span><span class="o">.</span><span class="n">MAXIMIZE</span><span class="p">)</span>
+     
+        <span class="c1"># constraint : each guest is at one table </span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">:</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">addConstr</span><span class="p">(</span><span class="n">quicksum</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_table</span><span class="p">))</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1">#constraints of mixing gender and mixing families</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_table</span><span class="p">):</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">table_list</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">C</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">addConstr</span><span class="p">(</span><span class="n">quicksum</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">table_list</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">C</span><span class="p">)</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">addConstr</span><span class="p">(</span><span class="n">quicksum</span><span class="p">(</span><span class="n">p</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">gender</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="n">p</span> <span class="o">+</span> <span class="n">quicksum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gender</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">)))</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">addConstr</span><span class="p">(</span><span class="n">quicksum</span><span class="p">(</span><span class="n">p</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">gender</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="o">-</span> <span class="n">p</span> <span class="o">+</span> <span class="n">quicksum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gender</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">)))</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">addConstr</span><span class="p">(</span><span class="n">quicksum</span><span class="p">(</span><span class="n">p</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">family</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">))</span> <span class="o">&lt;=</span> <span class="n">p</span> <span class="o">+</span> <span class="n">quicksum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">family</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">)))</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">addConstr</span><span class="p">(</span><span class="n">quicksum</span><span class="p">(</span><span class="n">p</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">family</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="o">-</span> <span class="n">p</span> <span class="o">+</span> <span class="n">quicksum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">family</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">)))</span>
+
+        <span class="c1">#constraints of putting couple and favorite guests together</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_guest</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">j</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_table</span><span class="p">):</span>
+                        <span class="n">m</span><span class="o">.</span><span class="n">addConstr</span><span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">k</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">k</span><span class="p">]</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">k</span><span class="p">])</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">couple</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]))</span>
+                        <span class="n">m</span><span class="o">.</span><span class="n">addConstr</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">k</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">k</span><span class="p">]</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">k</span><span class="p">])</span><span class="o">*</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">choice</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]))</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">x</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="p">:</span> 
+            <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">X</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">lettre</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">VarName</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="n">lettre</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">lettre</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_table</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">lettre</span><span class="p">[</span><span class="n">lettre</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">:])</span> <span class="o">==</span> <span class="n">k</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_list</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">lettre</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">lettre</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)])</span><span class="o">==</span><span class="n">i</span><span class="p">:</span>
+                                <span class="n">guest</span> <span class="o">=</span> <span class="n">Guest</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Guest</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">i</span><span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">table_list</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">add_guest</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">guest</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="n">guest</span><span class="o">.</span><span class="n">surname</span><span class="p">))</span>
+                                <span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">i</span><span class="p">)</span>
+                                <span class="n">player</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="n">k</span>
+                                <span class="n">player</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nb_table</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">table_guest</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">table_list</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">guests_list</span><span class="p">)</span>  
+
+        <span class="k">return</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">table_guest</span><span class="p">]</span></div></div>
+
+<span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Lucas Sautier - Pierre-Louis Le Goff - Nicolas Corvol - Garance Gérard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

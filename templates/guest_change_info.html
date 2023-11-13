@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<img id ="fond_guest_list_table" src="{{ url_for('static', filename='fond_guest_list_table.jpg') }}" >
+<div class="forme">
+    <h1>Modification de vos informations</h1>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}<br>
+
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        Veuillez renseigner votre mot de passe avant de pouvoir modifier vos informations personnelles s'il-vous-plaît. 
+        <div class="form-group">
+            <label>Mot de passe</label>
+            {{ form.password(class="form-input") }}
+        </div><br>
+
+        <div class="form-group">
+            {{ form.age.label(class="form-label") }}
+            {{ form.age(class="form-input") }}
+        </div><br>
+
+        <div class="form-group">
+            {{ form.couple_situation.label(class="form-label") }}<br>
+            {% for subfield in  form.couple_situation %}
+                <tr>    
+                    <td>{{ subfield }}</td>
+                    <td>{{ subfield.label }}</td><br>
+                </tr>
+            {% endfor %}
+        </div>
+            
+        <div class="form-group">
+            <label>Nom de votre partenaire</label>
+                {{ form.partner_name(class="form-input") }}
+        </div><br>
+
+        <div class="form-group">
+            {{ form.gender.label(class="form-label") }}<br>
+            {% for subfield in  form.gender %}
+                <tr>    
+                    <td>{{ subfield }}</td>
+                    <td>{{ subfield.label }}</td><br>
+                </tr>
+            {% endfor %}
+        </div><br>
+
+        <div class="form-group">
+            <label>Vous venez de la part de</label><br>
+            {% for subfield in  form.family %}
+                <tr>    
+                    <td>{{ subfield }}</td>
+                    <td>{{ subfield.label }}</td><br>
+                </tr>
+            {% endfor %}
+        </div><br>
+
+        <div class="center">
+        Personnes a côté desquelles vous souhaitez être placé
+        </div>
+
+        <div class="form-group">
+            {{ form.favorite_guest_1.label(class="form-label") }}
+            {{ form.favorite_guest_1(class="form-input") }}
+        </div>
+        
+        <div class="form-group">
+            {{ form.favorite_guest_2.label(class="form-label") }}
+            {{ form.favorite_guest_2(class="form-input") }}
+        </div>
+
+        <div class="form-group">
+            {{ form.favorite_guest_3.label(class="form-label") }}
+            {{ form.favorite_guest_3(class="form-input") }}
+        </div><br>
+
+        <input type="submit" value ="Modifier"><br><br>
+    </form>
+</div>
+
+{% endblock %}

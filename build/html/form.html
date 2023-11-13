@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>form module &mdash; Event-Assignement 2023 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="main module" href="main.html" />
+    <link rel="prev" title="create_wed module" href="create_wed.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Event-Assignement
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Guest_route.html">Guest_route module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Orga_route.html">Orga_route module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RO.html">RO module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="create_wed.html">create_wed module</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">form module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="profil.html">profil module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="send_email.html">send_email module</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Event-Assignement</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">src</a></li>
+      <li class="breadcrumb-item active">form module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/form.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-src.form">
+<span id="form-module"></span><h1>form module<a class="headerlink" href="#module-src.form" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.form.ChangePassword">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.form.</span></span><span class="sig-name descname"><span class="pre">ChangePassword</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#ChangePassword"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.ChangePassword" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<p>The ChangePassword class inherits from the FlaskForm class of WTForms.
+It allows guests or organizers to change their passwords.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>actual_password</strong> (<em>PasswordField</em>) – Field for entering the actual password. It is required.</p></li>
+<li><p><strong>new_password</strong> – Field for entering the new password. It is required. It will be crypted.</p></li>
+<li><p><strong>confirm</strong> – Field for entering a second time the new password. It is required. It will be crypted.</p></li>
+<li><p><strong>submit</strong> (<em>SubmitField</em>) – Button to submit the form.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.ChangePassword.actual_password">
+<span class="sig-name descname"><span class="pre">actual_password</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(PasswordField,</span> <span class="pre">('Mot</span> <span class="pre">de</span> <span class="pre">passe</span> <span class="pre">actuel</span> <span class="pre">',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.ChangePassword.actual_password" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.ChangePassword.confirm_password">
+<span class="sig-name descname"><span class="pre">confirm_password</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(PasswordField,</span> <span class="pre">('Confirmer</span> <span class="pre">le</span> <span class="pre">mot</span> <span class="pre">de</span> <span class="pre">passe',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.ChangePassword.confirm_password" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.form.ChangePassword.must_be_equal">
+<span class="sig-name descname"><span class="pre">must_be_equal</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#ChangePassword.must_be_equal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.ChangePassword.must_be_equal" title="Permalink to this definition"></a></dt>
+<dd><p>This method verifies if the new password and the confirm password are the same.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the new password and the confirm password are the same, False otherwise</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.ChangePassword.new_password">
+<span class="sig-name descname"><span class="pre">new_password</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(PasswordField,</span> <span class="pre">('Nouveau</span> <span class="pre">mot</span> <span class="pre">de</span> <span class="pre">passe</span> <span class="pre">',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.ChangePassword.new_password" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.ChangePassword.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Modifer',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.ChangePassword.submit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.form.ChangePassword.verify_code">
+<span class="sig-name descname"><span class="pre">verify_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#ChangePassword.verify_code"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.ChangePassword.verify_code" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.form.ContactUs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.form.</span></span><span class="sig-name descname"><span class="pre">ContactUs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#ContactUs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.ContactUs" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<p>The ContactUs class inherits from the FlaskForm class of WTForms.
+It allows a user to send an email if he has any question.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>StringField</em>) – Field for entering the name of the person who wants to contact us. It is required.</p></li>
+<li><p><strong>email</strong> (<em>StringField</em>) – Field for entering the email of the person who wants to contact us. It is required and must be a valid email address.</p></li>
+<li><p><strong>subject</strong> (<em>StringField</em>) – Field for entering the subject of the mail. It is required.</p></li>
+<li><p><strong>body</strong> (<em>TextAreaField</em>) – Field for entering the content of the mail. It is required.</p></li>
+<li><p><strong>submit</strong> (<em>SubmitField</em>) – Button to submit the form.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.ContactUs.body">
+<span class="sig-name descname"><span class="pre">body</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(TextAreaField,</span> <span class="pre">('Contenu</span> <span class="pre">du</span> <span class="pre">mail',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.ContactUs.body" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.ContactUs.email">
+<span class="sig-name descname"><span class="pre">email</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Votre</span> <span class="pre">mail',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;,</span> <span class="pre">&lt;wtforms.validators.Email</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.ContactUs.email" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.ContactUs.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Votre</span> <span class="pre">nom',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.ContactUs.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.ContactUs.subject">
+<span class="sig-name descname"><span class="pre">subject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Objet</span> <span class="pre">du</span> <span class="pre">mail',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.ContactUs.subject" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.ContactUs.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Envoyer',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.ContactUs.submit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.form.ExchangeSeats">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.form.</span></span><span class="sig-name descname"><span class="pre">ExchangeSeats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#ExchangeSeats"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.ExchangeSeats" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<p>The ExchangeSeats class inherits from the FlaskForm class of WTForms.
+It allows organizers to exchange guests who are at different tables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>player_1</strong> (<em>SelectField</em>) – Field for selecting the first guest to exchange.</p></li>
+<li><p><strong>player_2</strong> (<em>SelectField</em>) – Field for selecting the second guest to exchange.</p></li>
+<li><p><strong>submit</strong> (<em>SubmitField</em>) – Button to submit the form.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.ExchangeSeats.player_1">
+<span class="sig-name descname"><span class="pre">player_1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SelectField,</span> <span class="pre">('Première</span> <span class="pre">personne</span> <span class="pre">que</span> <span class="pre">vous</span> <span class="pre">souhaitez</span> <span class="pre">échanger:</span> <span class="pre">',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.ExchangeSeats.player_1" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.ExchangeSeats.player_2">
+<span class="sig-name descname"><span class="pre">player_2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SelectField,</span> <span class="pre">('Deuxième</span> <span class="pre">personne</span> <span class="pre">que</span> <span class="pre">vous</span> <span class="pre">souhaitez</span> <span class="pre">échanger:</span> <span class="pre">',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.ExchangeSeats.player_2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.form.ExchangeSeats.set_choices">
+<span class="sig-name descname"><span class="pre">set_choices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#ExchangeSeats.set_choices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.ExchangeSeats.set_choices" title="Permalink to this definition"></a></dt>
+<dd><p>This method gives the different options of guests we can exchange which means aall the guests that are coming to the wedding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.ExchangeSeats.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Echanger',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.ExchangeSeats.submit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.form.ResetPassword">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.form.</span></span><span class="sig-name descname"><span class="pre">ResetPassword</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#ResetPassword"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.ResetPassword" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<p>The ResetPassword class inherits from the FlaskForm class of WTForms.
+It allows organizers and guests to reset their password if they have forgotten it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mariage</strong> (<em>StringField</em>) – Field for entering the name of the wedding to which the guest or the organizer is invited. It is required.</p></li>
+<li><p><strong>email</strong> (<em>StringField</em>) – Field for entering the guest or organizer’s email address. It is required and must be a valid email address.</p></li>
+<li><p><strong>submit</strong> (<em>SubmitField</em>) – Button to submit the form.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.ResetPassword.email">
+<span class="sig-name descname"><span class="pre">email</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Email',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;,</span> <span class="pre">&lt;wtforms.validators.Email</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.ResetPassword.email" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.ResetPassword.mariage">
+<span class="sig-name descname"><span class="pre">mariage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Nom</span> <span class="pre">du</span> <span class="pre">mariage',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.ResetPassword.mariage" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.ResetPassword.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Recevoir</span> <span class="pre">un</span> <span class="pre">code',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.ResetPassword.submit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.form.SendMail">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.form.</span></span><span class="sig-name descname"><span class="pre">SendMail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#SendMail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.SendMail" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.SendMail.body">
+<span class="sig-name descname"><span class="pre">body</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(TextAreaField,</span> <span class="pre">('</span> <span class="pre">Contenu</span> <span class="pre">du</span> <span class="pre">mail',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.SendMail.body" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.SendMail.subject">
+<span class="sig-name descname"><span class="pre">subject</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Objet</span> <span class="pre">du</span> <span class="pre">mail',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.SendMail.subject" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.SendMail.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Envoyer',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.SendMail.submit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.form.TablesFakeMariage">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.form.</span></span><span class="sig-name descname"><span class="pre">TablesFakeMariage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#TablesFakeMariage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.TablesFakeMariage" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<p>The TablesFakeMariage class inherits from the FlaskForm class of WTForms.
+It allows the user to choose the composition of tables he want for his fake wedding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table_capacity_number</strong> (<em>SelectField</em>) – Field for entering the name of the weeding we want to create. It is required.</p></li>
+<li><p><strong>submit</strong> (<em>SubmitField</em>) – Button to submit the form.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.form.TablesFakeMariage.set_choices">
+<span class="sig-name descname"><span class="pre">set_choices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#TablesFakeMariage.set_choices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.TablesFakeMariage.set_choices" title="Permalink to this definition"></a></dt>
+<dd><p>This method gives the different possibilites for the composition of tables when the number of guests is given.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.TablesFakeMariage.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Générer</span> <span class="pre">un</span> <span class="pre">mariage',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.TablesFakeMariage.submit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.TablesFakeMariage.table_capacity_number">
+<span class="sig-name descname"><span class="pre">table_capacity_number</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SelectField,</span> <span class="pre">('Choisissez</span> <span class="pre">la</span> <span class="pre">capacité</span> <span class="pre">et</span> <span class="pre">le</span> <span class="pre">nombre</span> <span class="pre">de</span> <span class="pre">tables</span> <span class="pre">de</span> <span class="pre">cette</span> <span class="pre">capacité',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.TablesFakeMariage.table_capacity_number" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.form.UploadFile">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.form.</span></span><span class="sig-name descname"><span class="pre">UploadFile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#UploadFile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.UploadFile" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<p>The UploadFile class inherits from the FlaskForm class of WTForms.
+It allows organizers to upload files to give the guest’s list or the number of tables and their capacity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_guest</strong> (<em>FileField</em>) – Field to upload a file containing the list of guests.</p></li>
+<li><p><strong>file_tables</strong> (<em>FileField</em>) – Field to upload a file containing the tables and their capacities.</p></li>
+<li><p><strong>submit</strong> (<em>SubmitField</em>) – Button to submit the form.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.UploadFile.file_guest">
+<span class="sig-name descname"><span class="pre">file_guest</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(FileField,</span> <span class="pre">('Fichier</span> <span class="pre">contenant</span> <span class="pre">les</span> <span class="pre">invités',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.UploadFile.file_guest" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.UploadFile.file_tables">
+<span class="sig-name descname"><span class="pre">file_tables</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(FileField,</span> <span class="pre">('Fichier</span> <span class="pre">pour</span> <span class="pre">les</span> <span class="pre">tables',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.UploadFile.file_tables" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.UploadFile.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Envoyer</span> <span class="pre">les</span> <span class="pre">fichiers',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.UploadFile.submit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.form.guest_login">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.form.</span></span><span class="sig-name descname"><span class="pre">guest_login</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#guest_login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.guest_login" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<p>The guest_login class inherits from the FlaskForm class of WTForms.
+It allows guests to log in the website.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<em>StringField</em>) – Field for entering the guest’s email address. It is required and must be a valid email address.</p></li>
+<li><p><strong>password</strong> (<em>PasswordField</em>) – Field for entering the guest’s password. It is required.</p></li>
+<li><p><strong>mariage</strong> (<em>StringField</em>) – Field for entering the name of the wedding to which the user wants to log in. It is required.</p></li>
+<li><p><strong>submit</strong> (<em>SubmitField</em>) – Button to submit the form.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Methods:
+validate_email(self, email): This method is used to validate the guest’s email address.
+validate_password(self, password): This method is used to validate the guest’s password.</p>
+<p>Example of use:
+form = guest_login()
+if form.validate_on_submit():</p>
+<blockquote>
+<div><p>email = form.email.data
+password = form.password.data
+mariage = form.mariage.data
+# Perform the login</p>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.guest_login.email">
+<span class="sig-name descname"><span class="pre">email</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Email',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;,</span> <span class="pre">&lt;wtforms.validators.Email</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.guest_login.email" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.guest_login.mariage">
+<span class="sig-name descname"><span class="pre">mariage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Mariage',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.guest_login.mariage" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.guest_login.password">
+<span class="sig-name descname"><span class="pre">password</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(PasswordField,</span> <span class="pre">('Mot</span> <span class="pre">de</span> <span class="pre">passe',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.guest_login.password" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.guest_login.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Se</span> <span class="pre">connecter',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.guest_login.submit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.form.nb_guest_couple">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.form.</span></span><span class="sig-name descname"><span class="pre">nb_guest_couple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#nb_guest_couple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.nb_guest_couple" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<p>The nb_guest_couple class inherits from the FlaskForm class of WTForms.
+It allows the user to give the number of guest and couples he wants for his fake wedding.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>StringField</em>) – Field for entering the name of the weeding we want to create. It is required.</p></li>
+<li><p><strong>nb_guest</strong> (<em>IntegerField</em>) – Field for entering the number of guests for the weeding we want to create. It is required.</p></li>
+<li><p><strong>nb_couple</strong> (<em>IntegerField</em>) – Field for entering the number of couples for the weeding we want to create. It is required.</p></li>
+<li><p><strong>submit</strong> (<em>SubmitField</em>) – Button to submit the form.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.nb_guest_couple.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Choisissez</span> <span class="pre">le</span> <span class="pre">nom</span> <span class="pre">du</span> <span class="pre">mariage</span> <span class="pre">que</span> <span class="pre">vous</span> <span class="pre">souhaitez</span> <span class="pre">créer',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.nb_guest_couple.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.form.nb_guest_couple.name_orga_available">
+<span class="sig-name descname"><span class="pre">name_orga_available</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#nb_guest_couple.name_orga_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.nb_guest_couple.name_orga_available" title="Permalink to this definition"></a></dt>
+<dd><p>This method verifies if no organizers have this wedding name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if it is available, False otherwise</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.form.nb_guest_couple.name_player_available">
+<span class="sig-name descname"><span class="pre">name_player_available</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#nb_guest_couple.name_player_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.nb_guest_couple.name_player_available" title="Permalink to this definition"></a></dt>
+<dd><p>This method verifies if no guests have this wedding name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if it is available, False otherwise</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.nb_guest_couple.nb_couple">
+<span class="sig-name descname"><span class="pre">nb_couple</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(IntegerField,</span> <span class="pre">('Choisissez</span> <span class="pre">le</span> <span class="pre">nombre</span> <span class="pre">de</span> <span class="pre">couples</span> <span class="pre">au</span> <span class="pre">sein</span> <span class="pre">de</span> <span class="pre">votre</span> <span class="pre">mariage',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.nb_guest_couple.nb_couple" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.nb_guest_couple.nb_guest">
+<span class="sig-name descname"><span class="pre">nb_guest</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(IntegerField,</span> <span class="pre">('Nombre</span> <span class="pre">de</span> <span class="pre">participants',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.nb_guest_couple.nb_guest" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.nb_guest_couple.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Enregistrer',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.nb_guest_couple.submit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.form.nb_guest_couple.verify_nb_couple">
+<span class="sig-name descname"><span class="pre">verify_nb_couple</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#nb_guest_couple.verify_nb_couple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.nb_guest_couple.verify_nb_couple" title="Permalink to this definition"></a></dt>
+<dd><p>This method verifies if the number of couples we want is feasible regarding to the number of guests.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if it is possible, False otherwise</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.form.orga_login">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.form.</span></span><span class="sig-name descname"><span class="pre">orga_login</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#orga_login"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.orga_login" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<p>The orga_register class inherits from the FlaskForm class of WTForms.
+It allows a organizer to log in the website.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<em>StringField</em>) – Field for entering the organizer’s email address. It is required and must be a valid email address.</p></li>
+<li><p><strong>password</strong> (<em>PasswordField</em>) – Field for entering the organizer’s password. It is required.</p></li>
+<li><p><strong>mariage</strong> (<em>StringField</em>) – Field for entering the name of the wedding to which the organizer wants to log in. It is required.</p></li>
+<li><p><strong>submit</strong> (<em>SubmitField</em>) – Button to submit the form.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.orga_login.email">
+<span class="sig-name descname"><span class="pre">email</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Email',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;,</span> <span class="pre">&lt;wtforms.validators.Email</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.orga_login.email" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.orga_login.mariage">
+<span class="sig-name descname"><span class="pre">mariage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Mariage',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.orga_login.mariage" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.orga_login.password">
+<span class="sig-name descname"><span class="pre">password</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(PasswordField,</span> <span class="pre">('Mot</span> <span class="pre">de</span> <span class="pre">Passe',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.orga_login.password" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.orga_login.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">('Se</span> <span class="pre">connecter',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.orga_login.submit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.form.orga_register">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.form.</span></span><span class="sig-name descname"><span class="pre">orga_register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#orga_register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.orga_register" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<p>The orga_register class inherits from the FlaskForm class of WTForms.
+It allows a organizer to sign in the website.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<em>StringField</em>) – Field for entering the organizer’s email address. It is required and must be a valid email address.</p></li>
+<li><p><strong>password</strong> (<em>PasswordField</em>) – Field for entering the organizer’s password. It is required.</p></li>
+<li><p><strong>mariage</strong> (<em>StringField</em>) – Field for entering the name of the wedding to which the organizer wants to sign in. It is required.</p></li>
+<li><p><strong>submit</strong> (<em>SubmitField</em>) – Button to submit the form.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Methods:
+validate_email(self, email): This method is used to validate the organizer’s email address.
+validate_password(self, password): This method is used to validate the organizer’s password.</p>
+<p>Example of use:
+form = orga_reg()
+if form.validate_on_submit():</p>
+<blockquote>
+<div><p>email = form.email.data
+password = form.password.data
+mariage = form.mariage.data
+# Perform the login</p>
+</div></blockquote>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.orga_register.bride_name">
+<span class="sig-name descname"><span class="pre">bride_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Prénom</span> <span class="pre">de</span> <span class="pre">la</span> <span class="pre">mariée',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.orga_register.bride_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.orga_register.bride_surname">
+<span class="sig-name descname"><span class="pre">bride_surname</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Nom</span> <span class="pre">de</span> <span class="pre">la</span> <span class="pre">mariée',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.orga_register.bride_surname" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.orga_register.email">
+<span class="sig-name descname"><span class="pre">email</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Email',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;,</span> <span class="pre">&lt;wtforms.validators.Email</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.orga_register.email" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.orga_register.groom_name">
+<span class="sig-name descname"><span class="pre">groom_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Prénom</span> <span class="pre">du</span> <span class="pre">marié',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.orga_register.groom_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.orga_register.groom_surname">
+<span class="sig-name descname"><span class="pre">groom_surname</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Nom</span> <span class="pre">du</span> <span class="pre">marié',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.orga_register.groom_surname" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.orga_register.mariage">
+<span class="sig-name descname"><span class="pre">mariage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Mariage',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.orga_register.mariage" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.orga_register.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Votre</span> <span class="pre">prénom',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.orga_register.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.orga_register.password">
+<span class="sig-name descname"><span class="pre">password</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(PasswordField,</span> <span class="pre">('Mot</span> <span class="pre">de</span> <span class="pre">passe',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.orga_register.password" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.orga_register.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">(&quot;S'inscrire&quot;,),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.orga_register.submit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.orga_register.surname">
+<span class="sig-name descname"><span class="pre">surname</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Votre</span> <span class="pre">nom',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.orga_register.surname" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.form.player_register">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.form.</span></span><span class="sig-name descname"><span class="pre">player_register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#player_register"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.player_register" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<p>The player_register class inherits from the FlaskForm class of WTForms.
+It allows guests to sign in the website and to enter their information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mariage</strong> (<em>StringField</em>) – Field for entering the name of the wedding to which the guest wants to log in. It is required. The guest needs to already be invited to this wedding.</p></li>
+<li><p><strong>password</strong> (<em>PasswordField</em>) – Field for entering the guest’s password. It is required. It will be crypted.</p></li>
+<li><p><strong>age</strong> (<em>IntegerField</em>) – Field for entering the age of the guest. It is required.</p></li>
+<li><p><strong>couple_situation</strong> (<em>RadioField</em><em>)</em>) – Field for entering the couple situation of a guest : 0 if not in a couple, 1 if in a couple. It is required.</p></li>
+<li><p><strong>partner_name</strong> (<em>SelectField</em>) – Field for entering the name of his partner among the guest’s list (if their is one). It is required if the guest is in a couple.</p></li>
+<li><p><strong>gender</strong> (<em>RadioField</em>) – Field for entering the gender of the guest. It is required.</p></li>
+<li><p><strong>family</strong> (<em>RadioField</em>) – Field for entering the family of the guest. It is required.</p></li>
+<li><p><strong>favorite_guest_1</strong> (<em>SelectField</em>) – Field for entering the first choice of guest who the guest wants to be seated next to.</p></li>
+<li><p><strong>favorite_guest_2</strong> (<em>SelectField</em>) – Field for entering the second choice of guest who the guest wants to be seated next to.</p></li>
+<li><p><strong>favorite_guest_3</strong> (<em>SelectField</em>) – Field for entering the third choice of guest who the guest wants to be seated next to.</p></li>
+<li><p><strong>submit</strong> (<em>SubmitField</em>) – Button to submit the form.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.player_register.age">
+<span class="sig-name descname"><span class="pre">age</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(IntegerField,</span> <span class="pre">('Votre</span> <span class="pre">age',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.player_register.age" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.player_register.couple_situation">
+<span class="sig-name descname"><span class="pre">couple_situation</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(RadioField,</span> <span class="pre">('Etes-vous</span> <span class="pre">en</span> <span class="pre">couple</span> <span class="pre">?',),</span> <span class="pre">{'choices':</span> <span class="pre">[('1',</span> <span class="pre">'Oui'),</span> <span class="pre">('0',</span> <span class="pre">'Non')],</span> <span class="pre">'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.player_register.couple_situation" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.player_register.family">
+<span class="sig-name descname"><span class="pre">family</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(RadioField,</span> <span class="pre">('De</span> <span class="pre">la</span> <span class="pre">part</span> <span class="pre">de</span> <span class="pre">qui</span> <span class="pre">venez-vous</span> <span class="pre">?',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.player_register.family" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.player_register.favorite_guest_1">
+<span class="sig-name descname"><span class="pre">favorite_guest_1</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SelectField,</span> <span class="pre">('1er</span> <span class="pre">choix',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.player_register.favorite_guest_1" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.player_register.favorite_guest_2">
+<span class="sig-name descname"><span class="pre">favorite_guest_2</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SelectField,</span> <span class="pre">('2e</span> <span class="pre">choix',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.player_register.favorite_guest_2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.player_register.favorite_guest_3">
+<span class="sig-name descname"><span class="pre">favorite_guest_3</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SelectField,</span> <span class="pre">('3e</span> <span class="pre">choix',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.player_register.favorite_guest_3" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.player_register.gender">
+<span class="sig-name descname"><span class="pre">gender</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(RadioField,</span> <span class="pre">('Votre</span> <span class="pre">genre',),</span> <span class="pre">{'choices':</span> <span class="pre">[('1',</span> <span class="pre">'Homme'),</span> <span class="pre">('0',</span> <span class="pre">'Femme')],</span> <span class="pre">'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.player_register.gender" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.player_register.partner_name">
+<span class="sig-name descname"><span class="pre">partner_name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SelectField,</span> <span class="pre">('Si</span> <span class="pre">oui,</span> <span class="pre">veuillez</span> <span class="pre">renseigner</span> <span class="pre">le</span> <span class="pre">nom</span> <span class="pre">de</span> <span class="pre">votre</span> <span class="pre">partenaire.',),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.player_register.partner_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.player_register.password">
+<span class="sig-name descname"><span class="pre">password</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(PasswordField,</span> <span class="pre">('Définir</span> <span class="pre">un</span> <span class="pre">mot</span> <span class="pre">de</span> <span class="pre">passe',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.player_register.password" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.form.player_register.set_choices">
+<span class="sig-name descname"><span class="pre">set_choices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#player_register.set_choices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.player_register.set_choices" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.player_register.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">(&quot;S'inscrire&quot;,),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.player_register.submit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="src.form.player_register_init">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.form.</span></span><span class="sig-name descname"><span class="pre">player_register_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/src/form.html#player_register_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.form.player_register_init" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">FlaskForm</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>email</strong> (<em>StringField</em>) – Field for entering the guest’s email address. It is required and must be a valid email address.</p></li>
+<li><p><strong>password</strong> (<em>PasswordField</em>) – Field for entering the guest’s password. It is required. It will be crypted.</p></li>
+<li><p><strong>mariage</strong> (<em>StringField</em>) – Field for entering the name of the wedding to which the guest wants to sign in. It is required. The guest needs to already be invited to this wedding.</p></li>
+<li><p><strong>submit</strong> (<em>SubmitField</em>) – Button to submit the form.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.player_register_init.email">
+<span class="sig-name descname"><span class="pre">email</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('Email',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;,</span> <span class="pre">&lt;wtforms.validators.Email</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.player_register_init.email" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.player_register_init.mariage">
+<span class="sig-name descname"><span class="pre">mariage</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(StringField,</span> <span class="pre">('A</span> <span class="pre">quel</span> <span class="pre">mariage</span> <span class="pre">êtes-vous</span> <span class="pre">invité</span> <span class="pre">?',),</span> <span class="pre">{'validators':</span> <span class="pre">[&lt;wtforms.validators.DataRequired</span> <span class="pre">object&gt;]})&gt;</span></em><a class="headerlink" href="#src.form.player_register_init.mariage" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.form.player_register_init.submit">
+<span class="sig-name descname"><span class="pre">submit</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;UnboundField(SubmitField,</span> <span class="pre">(&quot;S'inscrire&quot;,),</span> <span class="pre">{})&gt;</span></em><a class="headerlink" href="#src.form.player_register_init.submit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="create_wed.html" class="btn btn-neutral float-left" title="create_wed module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="main.html" class="btn btn-neutral float-right" title="main module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Lucas Sautier - Pierre-Louis Le Goff - Nicolas Corvol - Garance Gérard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

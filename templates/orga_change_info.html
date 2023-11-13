@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<img id ="fond_info" src="{{ url_for('static', filename='fond_info.jpg') }}" >
+
+<div id="register">
+    <h1>Modifier mes informations</h1><br>
+
+    {% for message in messages %}
+        <div class="flash-message">{{ message }}</div>
+        {% set messages = messages[:loop.index] + messages[loop.index+1:] %}
+    {% endfor %}
+
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        Veuillez renseigner votre mot de passe avant de pouvoir modifier vos informations : <br><br>
+
+        {{ form.password.label(class="form-label") }}
+        {{ form.password(class="form-input") }}
+            
+        {% for error in form.email.errors %}
+            {{ error }}
+        {% endfor %}<br><br>
+        <div class="content_login">
+            <div class="form-group">
+                {{form.mariage.label(class="form-label") }}
+                {{ form.mariage(class="form-input") }}
+            </div>
+        
+            <div class="form-group">
+                {{form.name.label(class="form-label") }}
+                {{ form.name(class="form-input") }}
+            </div>
+
+            <div class="form-group">
+                {{form.surname.label(class="form-label") }}
+                {{ form.surname(class="form-input") }}
+            </div>
+
+            <div class="form-group">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-input") }}   
+                {% for error in form.email.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                {{form.groom_name.label(class="form-label") }}
+                {{ form.groom_name(class="form-input") }}
+            </div>
+
+            <div class="form-group">
+                {{form.groom_surname.label(class="form-label") }}
+                {{ form.groom_surname(class="form-input") }}
+            </div>
+
+            <div class="form-group">
+                {{form.bride_name.label(class="form-label") }}
+                {{ form.bride_name(class="form-input") }}
+            </div>
+
+            <div class="form-group">
+                {{form.bride_surname.label(class="form-label") }}
+                {{ form.bride_surname(class="form-input") }}
+            </div>
+        </div><br>
+        <input type="submit" value ="Modifier">
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>src.main &mdash; Event-Assignement 2023 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Event-Assignement
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">src</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Event-Assignement</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">src.main</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for src.main</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">flash</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">current_app</span><span class="p">,</span> <span class="n">send_from_directory</span>
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">render_template</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">url_for</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">get_flashed_messages</span>
+<span class="kn">from</span> <span class="nn">flask_bcrypt</span> <span class="kn">import</span> <span class="n">generate_password_hash</span><span class="p">,</span> <span class="n">check_password_hash</span>
+<span class="kn">from</span> <span class="nn">peewee</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">openpyxl</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">string</span> <span class="kn">import</span> <span class="n">ascii_lowercase</span>
+<span class="kn">from</span> <span class="nn">werkzeug.utils</span> <span class="kn">import</span> <span class="n">secure_filename</span>
+
+<span class="kn">from</span> <span class="nn">src.profil</span> <span class="kn">import</span> <span class="n">db</span><span class="p">,</span> <span class="n">Guest</span><span class="p">,</span> <span class="n">Player</span><span class="p">,</span> <span class="n">Orga</span><span class="p">,</span> <span class="n">Tables</span>
+<span class="kn">from</span> <span class="nn">src.Guest_route</span> <span class="kn">import</span> <span class="n">bp</span> <span class="k">as</span> <span class="n">guest_bp</span>
+<span class="kn">from</span> <span class="nn">src.Orga_route</span> <span class="kn">import</span> <span class="n">bp</span> <span class="k">as</span> <span class="n">orga_bp</span>
+<span class="kn">from</span> <span class="nn">src.Orga_route</span> <span class="kn">import</span> <span class="n">orga_login_required_id</span>
+<span class="kn">from</span> <span class="nn">src.Guest_route</span> <span class="kn">import</span> <span class="n">login_required_id</span>
+<span class="kn">from</span> <span class="nn">src.create_wed</span> <span class="kn">import</span> <span class="n">CreateMariage</span>
+<span class="kn">from</span> <span class="nn">src.send_email</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">src.form</span> <span class="kn">import</span> <span class="n">ExchangeSeats</span><span class="p">,</span> <span class="n">ChangePassword</span><span class="p">,</span> <span class="n">nb_guest_couple</span><span class="p">,</span> <span class="n">TablesFakeMariage</span><span class="p">,</span> <span class="n">ResetPassword</span><span class="p">,</span> <span class="n">ContactUs</span><span class="p">,</span> <span class="n">UploadFile</span>
+<span class="kn">import</span> <span class="nn">src.RO</span>
+
+<span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="kn">import</span> <span class="n">quote</span><span class="p">,</span> <span class="n">unquote</span>
+
+<div class="viewcode-block" id="Chemin"><a class="viewcode-back" href="../../main.html#src.main.Chemin">[docs]</a><span class="k">def</span> <span class="nf">Chemin</span><span class="p">(</span><span class="n">folder_name</span><span class="p">):</span>
+
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">folder_name</span><span class="p">)),</span> <span class="n">folder_name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_app"><a class="viewcode-back" href="../../main.html#src.main.create_app">[docs]</a><span class="k">def</span> <span class="nf">create_app</span><span class="p">(</span><span class="n">static_folder_name</span><span class="p">,</span> <span class="n">templates_folder_name</span><span class="p">):</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>  <span class="c1">#creating the app</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">secret_key</span> <span class="o">=</span> <span class="s1">&#39;superbe_secret_key&#39;</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">static_folder</span> <span class="o">=</span> <span class="n">Chemin</span><span class="p">(</span><span class="n">static_folder_name</span><span class="p">)</span>  <span class="c1">#giving flask the path to the static files</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">template_folder</span> <span class="o">=</span> <span class="n">Chemin</span><span class="p">(</span><span class="n">templates_folder_name</span><span class="p">)</span>  <span class="c1">#giving flask the path to the templates</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">guest_bp</span><span class="p">)</span>  <span class="c1"># Blueprint of the app for the guests&#39; routes</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">register_blueprint</span><span class="p">(</span><span class="n">orga_bp</span><span class="p">)</span>  <span class="c1"># Blueprint of the app for the organizers&#39; routes</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>  <span class="c1">#connecting to the database</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">create_tables</span><span class="p">([</span><span class="n">Guest</span><span class="p">,</span> <span class="n">Player</span><span class="p">,</span> <span class="n">Orga</span><span class="p">,</span> <span class="n">Tables</span><span class="p">])</span>  <span class="c1">#creating the tables </span>
+    <span class="k">return</span> <span class="n">app</span></div>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">create_app</span><span class="p">(</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="s2">&quot;templates&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_orga_player_email"><a class="viewcode-back" href="../../main.html#src.main.get_orga_player_email">[docs]</a><span class="k">def</span> <span class="nf">get_orga_player_email</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">mariage</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">statut</span> <span class="o">==</span> <span class="s1">&#39;guest&#39;</span><span class="p">:</span> 
+        <span class="k">try</span><span class="p">:</span> 
+            <span class="n">guest</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">Player</span><span class="o">.</span><span class="n">mariage</span><span class="o">==</span><span class="n">mariage</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">email</span> <span class="o">==</span> <span class="n">email</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">guest</span>
+    <span class="k">if</span> <span class="n">statut</span> <span class="o">==</span> <span class="s1">&#39;orga&#39;</span><span class="p">:</span> 
+        <span class="k">try</span><span class="p">:</span> 
+            <span class="n">orga</span> <span class="o">=</span> <span class="n">Orga</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">Orga</span><span class="o">.</span><span class="n">mariage</span><span class="o">==</span><span class="n">mariage</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Orga</span><span class="o">.</span><span class="n">email</span> <span class="o">==</span> <span class="n">email</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">orga</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="get_orga_guest"><a class="viewcode-back" href="../../main.html#src.main.get_orga_guest">[docs]</a><span class="k">def</span> <span class="nf">get_orga_guest</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="p">):</span> 
+    <span class="k">if</span> <span class="n">statut</span> <span class="o">==</span> <span class="s1">&#39;guest&#39;</span><span class="p">:</span> 
+        <span class="k">try</span><span class="p">:</span> 
+            <span class="n">guest</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">ident</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;L&#39;invité qui essaye de se connecter n&#39;est pas dans la base de données&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">guest</span>
+    <span class="k">if</span> <span class="n">statut</span> <span class="o">==</span> <span class="s1">&#39;orga&#39;</span><span class="p">:</span> 
+        <span class="k">try</span><span class="p">:</span> 
+            <span class="n">orga</span> <span class="o">=</span> <span class="n">Orga</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Orga</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">ident</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;L&#39;invité qui essaye de se connecter n&#39;est pas dans la base de données&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">orga</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="get_orga_guest_2"><a class="viewcode-back" href="../../main.html#src.main.get_orga_guest_2">[docs]</a><span class="k">def</span> <span class="nf">get_orga_guest_2</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">statut</span> <span class="o">==</span> <span class="s1">&#39;guest&#39;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span> 
+            <span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">ident</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;L&#39;utilisateur qui essaye de ne connecter n&#39;est pas dans la base de données&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;logout&#39;</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span> 
+            <span class="n">orga</span> <span class="o">=</span> <span class="n">Orga</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Orga</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="n">player</span><span class="o">.</span><span class="n">mariage</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Aucun utilisateur n&#39;est organisateur de ce mariage&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;logout&#39;</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">player</span><span class="p">,</span> <span class="n">orga</span>
+    <span class="k">if</span> <span class="n">statut</span> <span class="o">==</span> <span class="s1">&#39;orga&#39;</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span> 
+            <span class="n">orga</span> <span class="o">=</span> <span class="n">Orga</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">Orga</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">ident</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DoesNotExist</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;L&#39;utilisateur qui essaye de ne connecter n&#39;est pas dans la base de données&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;logout&#39;</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">orga</span>
+    <span class="k">else</span><span class="p">:</span> 
+        <span class="k">return</span> <span class="kc">None</span></div>
+    
+
+<div class="viewcode-block" id="logout"><a class="viewcode-back" href="../../main.html#src.main.logout">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/logout/&lt;statut&gt;/&lt;ident&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">logout</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="p">):</span>
+    <span class="c1"># Delete the user session</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">statut</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ident</span><span class="p">)),</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">current_app</span><span class="o">.</span><span class="n">root_path</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="s1">&#39;src&#39;</span><span class="p">)),</span> <span class="s1">&#39;src&#39;</span><span class="p">))</span>
+    <span class="c1"># Redirect the user to the accueil page</span>
+    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;page_de_garde&#39;</span><span class="p">))</span></div>
+    
+
+<div class="viewcode-block" id="page_de_garde"><a class="viewcode-back" href="../../main.html#src.main.page_de_garde">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">page_de_garde</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function &#39;page_de_garde&#39; handle the back-end of accueil page.</span>
+<span class="sd">    :return: Page d&#39;accueil</span>
+<span class="sd">    :rtype: template</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;accueil.html&#39;</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Accueil&#39;</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">messages</span> <span class="o">=</span> <span class="n">get_flashed_messages</span><span class="p">()</span> <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="page_de_garde_login"><a class="viewcode-back" href="../../main.html#src.main.page_de_garde_login">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/&lt;statut&gt;/&lt;ident&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">page_de_garde_login</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="p">):</span>
+    <span class="nd">@login_required_id</span><span class="p">(</span><span class="n">ident</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">statut</span> <span class="o">==</span> <span class="s1">&#39;guest&#39;</span><span class="p">:</span>
+            <span class="n">player</span><span class="p">,</span> <span class="n">orga</span> <span class="o">=</span> <span class="n">get_orga_guest_2</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;accueil.html&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Accueil&#39;</span><span class="p">,</span> <span class="n">log</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">player</span><span class="o">.</span><span class="n">mariage</span><span class="p">,</span> <span class="n">full_name</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">full_name</span><span class="p">(),</span>
+                                   <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">groom_full_name</span> <span class="o">=</span> <span class="n">orga</span><span class="o">.</span><span class="n">groom_full_name</span><span class="p">(),</span> <span class="n">bride_full_name</span> <span class="o">=</span> <span class="n">orga</span><span class="o">.</span><span class="n">bride_full_name</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">statut</span> <span class="o">==</span> <span class="s1">&#39;orga&#39;</span><span class="p">:</span>
+            <span class="n">orga</span> <span class="o">=</span> <span class="n">get_orga_guest_2</span><span class="p">(</span><span class="s1">&#39;orga&#39;</span><span class="p">,</span> <span class="n">ident</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;accueil.html&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Accueil&#39;</span><span class="p">,</span><span class="n">log</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">orga</span><span class="o">.</span><span class="n">mariage</span><span class="p">,</span> <span class="n">full_name</span> <span class="o">=</span> <span class="n">orga</span><span class="o">.</span><span class="n">orga_full_name</span><span class="p">(),</span>
+                                   <span class="n">statut</span><span class="o">=</span><span class="s1">&#39;orga&#39;</span><span class="p">,</span> <span class="n">groom_full_name</span> <span class="o">=</span> <span class="n">orga</span><span class="o">.</span><span class="n">groom_full_name</span><span class="p">(),</span> <span class="n">bride_full_name</span><span class="o">=</span><span class="n">orga</span><span class="o">.</span><span class="n">bride_full_name</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="k">return</span> <span class="s2">&quot;non&quot;</span>
+    <span class="k">return</span> <span class="n">wrapper</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="about_us"><a class="viewcode-back" href="../../main.html#src.main.about_us">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/about_us&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">about_us</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function &#39;about_us&#39; handle the back-end of about us page.</span>
+
+<span class="sd">    :return: About us page </span>
+<span class="sd">    :rtype: template</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;about_us.html&#39;</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;about us&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="about_us_login"><a class="viewcode-back" href="../../main.html#src.main.about_us_login">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/about_us/&lt;statut&gt;/&lt;ident&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">about_us_login</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="p">):</span>
+    <span class="nd">@login_required_id</span><span class="p">(</span><span class="n">ident</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">statut</span> <span class="o">==</span> <span class="s1">&#39;guest&#39;</span><span class="p">:</span>
+            <span class="n">player</span><span class="p">,</span> <span class="n">orga</span> <span class="o">=</span> <span class="n">get_orga_guest_2</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;about_us.html&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;About us&#39;</span><span class="p">,</span> <span class="n">log</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">player</span><span class="o">.</span><span class="n">mariage</span><span class="p">,</span> <span class="n">full_name</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">full_name</span><span class="p">(),</span> 
+                                   <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">groom_full_name</span> <span class="o">=</span> <span class="n">orga</span><span class="o">.</span><span class="n">groom_full_name</span><span class="p">(),</span> <span class="n">bride_full_name</span> <span class="o">=</span> <span class="n">orga</span><span class="o">.</span><span class="n">bride_full_name</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">orga</span> <span class="o">=</span> <span class="n">get_orga_guest_2</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;about_us.html&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;About us&#39;</span><span class="p">,</span><span class="n">log</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">orga</span><span class="o">.</span><span class="n">mariage</span><span class="p">,</span> <span class="n">full_name</span> <span class="o">=</span> <span class="n">orga</span><span class="o">.</span><span class="n">orga_full_name</span><span class="p">(),</span> 
+                                   <span class="n">statut</span><span class="o">=</span><span class="s1">&#39;orga&#39;</span><span class="p">,</span> <span class="n">groom_full_name</span> <span class="o">=</span> <span class="n">orga</span><span class="o">.</span><span class="n">groom_full_name</span><span class="p">(),</span> <span class="n">bride_full_name</span><span class="o">=</span><span class="n">orga</span><span class="o">.</span><span class="n">bride_full_name</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">wrapper</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="algo"><a class="viewcode-back" href="../../main.html#src.main.algo">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/algo&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">algo</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function &#39;algo&#39; handle the back-end of &quot;how does it works ?&quot; page.</span>
+
+<span class="sd">    :return: Algo page </span>
+<span class="sd">    :rtype: template</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;algo.html&#39;</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Algo&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="algo_login"><a class="viewcode-back" href="../../main.html#src.main.algo_login">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/algo/&lt;statut&gt;/&lt;ident&gt;&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">algo_login</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="p">):</span>
+    <span class="nd">@login_required_id</span><span class="p">(</span><span class="n">ident</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">statut</span> <span class="o">==</span> <span class="s1">&#39;guest&#39;</span><span class="p">:</span>
+            <span class="n">player</span><span class="p">,</span> <span class="n">orga</span> <span class="o">=</span> <span class="n">get_orga_guest_2</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;algo.html&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Algo&#39;</span><span class="p">,</span> <span class="n">log</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">player</span><span class="o">.</span><span class="n">mariage</span><span class="p">,</span> <span class="n">full_name</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">full_name</span><span class="p">(),</span>
+                                    <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">groom_full_name</span> <span class="o">=</span> <span class="n">orga</span><span class="o">.</span><span class="n">groom_full_name</span><span class="p">(),</span> <span class="n">bride_full_name</span> <span class="o">=</span> <span class="n">orga</span><span class="o">.</span><span class="n">bride_full_name</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">orga</span> <span class="o">=</span> <span class="n">get_orga_guest_2</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;algo.html&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Algo&#39;</span><span class="p">,</span><span class="n">log</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">orga</span><span class="o">.</span><span class="n">mariage</span><span class="p">,</span> <span class="n">full_name</span> <span class="o">=</span> <span class="n">orga</span><span class="o">.</span><span class="n">orga_full_name</span><span class="p">(),</span>
+                                    <span class="n">statut</span><span class="o">=</span><span class="s1">&#39;orga&#39;</span><span class="p">,</span> <span class="n">groom_full_name</span> <span class="o">=</span> <span class="n">orga</span><span class="o">.</span><span class="n">groom_full_name</span><span class="p">(),</span> <span class="n">bride_full_name</span><span class="o">=</span><span class="n">orga</span><span class="o">.</span><span class="n">bride_full_name</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">wrapper</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="contact_us"><a class="viewcode-back" href="../../main.html#src.main.contact_us">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/contact_us&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">contact_us</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function &#39;contact_us&#39; handle the back-end of &quot;contact_us&quot; page.</span>
+
+<span class="sd">    :return: contact_us page </span>
+<span class="sd">    :rtype: template</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#In odrer to modify the list of people that receive mail from people contacting us you need to modify communication list</span>
+    <span class="n">communication_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pierrelouis.legoff@free.fr&#39;</span><span class="p">]</span>
+    <span class="n">message</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">ContactUs</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>            
+            <span class="n">message</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;L email a été envoyé par &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">+</span> <span class="s1">&#39; Si vous voulez le contacter voila son adresse mail &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">+</span>
+                          <span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> Voici son message : </span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+            <span class="n">send_mail_organisation</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="n">form</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">communication_list</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;page_de_garde&#39;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;contact_us.html&#39;</span><span class="p">,</span> <span class="n">title</span> <span class="o">=</span> <span class="s2">&quot;Nous contacter&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="contact_us_login"><a class="viewcode-back" href="../../main.html#src.main.contact_us_login">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/contact_us/&lt;statut&gt;/&lt;ident&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">contact_us_login</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="p">):</span>
+    <span class="nd">@login_required_id</span><span class="p">(</span><span class="n">ident</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">():</span>
+        <span class="n">communication_list</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;pierrelouis.legoff@free.fr&#39;</span><span class="p">]</span>
+        <span class="n">message</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">ContactUs</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">statut</span> <span class="o">==</span> <span class="s1">&#39;guest&#39;</span><span class="p">:</span>
+            <span class="n">player</span><span class="p">,</span> <span class="n">orga</span> <span class="o">=</span> <span class="n">get_orga_guest_2</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="p">)</span> 
+            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>           
+                    <span class="n">message</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;L email a été envoyé par &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">+</span> <span class="s1">&#39; Si vous voulez le contacter voila son adresse mail &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> Voici son message : </span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+                    <span class="n">send_mail_organisation</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="n">form</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">communication_list</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;page_de_garde_login&#39;</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;contact_us.html&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Nous contacter&#39;</span><span class="p">,</span> <span class="n">log</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">player</span><span class="o">.</span><span class="n">mariage</span><span class="p">,</span> <span class="n">full_name</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">full_name</span><span class="p">(),</span> 
+                                   <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">groom_full_name</span> <span class="o">=</span> <span class="n">orga</span><span class="o">.</span><span class="n">groom_full_name</span><span class="p">(),</span> <span class="n">bride_full_name</span> <span class="o">=</span> <span class="n">orga</span><span class="o">.</span><span class="n">bride_full_name</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">orga</span> <span class="o">=</span> <span class="n">get_orga_guest_2</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>           
+                    <span class="n">message</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;L email a été envoyé par &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">+</span> <span class="s1">&#39; Si vous voulez le contacter voila son adresse mail &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">+</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> Voici son message : </span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+                    <span class="n">send_mail_organisation</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="n">form</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">communication_list</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;page_de_garde_login&#39;</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;contact_us.html&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Nous contacter&#39;</span><span class="p">,</span><span class="n">log</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">orga</span><span class="o">.</span><span class="n">mariage</span><span class="p">,</span> <span class="n">full_name</span> <span class="o">=</span> <span class="n">orga</span><span class="o">.</span><span class="n">orga_full_name</span><span class="p">(),</span> 
+                                   <span class="n">statut</span><span class="o">=</span><span class="s1">&#39;orga&#39;</span><span class="p">,</span> <span class="n">groom_full_name</span> <span class="o">=</span> <span class="n">orga</span><span class="o">.</span><span class="n">groom_full_name</span><span class="p">(),</span> <span class="n">bride_full_name</span><span class="o">=</span><span class="n">orga</span><span class="o">.</span><span class="n">bride_full_name</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">wrapper</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="change_password"><a class="viewcode-back" href="../../main.html#src.main.change_password">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/change_password/&lt;statut&gt;/&lt;mariage&gt;/&lt;ident&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="s1">&#39;post&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">change_password</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">mariage</span><span class="p">,</span> <span class="n">ident</span><span class="p">):</span>
+    <span class="nd">@login_required_id</span><span class="p">(</span><span class="n">ident</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">():</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">ChangePassword</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+                <span class="n">user</span> <span class="o">=</span> <span class="n">get_orga_guest</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">check_password_hash</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">password</span><span class="p">,</span> <span class="n">form</span><span class="o">.</span><span class="n">actual_password</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">must_be_equal</span><span class="p">():</span>
+                        <span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">generate_password_hash</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">new_password</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+                        <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">statut</span> <span class="o">==</span> <span class="s1">&#39;guest&#39;</span><span class="p">:</span>
+                            <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Votre mot de passe a bien été modifié&quot;</span><span class="p">)</span>
+                            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;guest.guest_profil&#39;</span><span class="p">,</span> <span class="n">statut</span> <span class="o">=</span> <span class="n">statut</span><span class="p">,</span> <span class="n">ident</span> <span class="o">=</span> <span class="n">ident</span><span class="p">,</span> <span class="n">mariage</span> <span class="o">=</span> <span class="n">mariage</span><span class="p">,</span> <span class="n">full_name</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">full_name</span><span class="p">(),</span> <span class="n">guest_ident</span> <span class="o">=</span> <span class="n">ident</span><span class="p">))</span>
+                        <span class="k">if</span> <span class="n">statut</span> <span class="o">==</span> <span class="s1">&#39;orga&#39;</span><span class="p">:</span>
+                            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;orga.orga_info&#39;</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Erreur, veuillez vous reconecté&quot;</span><span class="p">)</span>
+                            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;logout&#39;</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Les deux mots de passe doivent être les mêmes&quot;</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;change_password&#39;</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span> 
+                    <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;mot de passe incorrect&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;change_password&#39;</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Les champs sont mal renseignés, veuillez rééssayer&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;change_password&#39;</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;change_password.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="n">get_flashed_messages</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">wrapper</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="password_forgotten"><a class="viewcode-back" href="../../main.html#src.main.password_forgotten">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/password_forgotten/&lt;status&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;get&#39;</span><span class="p">,</span><span class="s1">&#39;post&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">password_forgotten</span><span class="p">(</span><span class="n">status</span><span class="p">):</span>
+    <span class="n">message</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">ResetPassword</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+            <span class="n">subject</span><span class="o">=</span><span class="s1">&#39;Mariage Seating&amp;CO : Réinitialisation de votre mot de passe&#39;</span>
+            <span class="n">mariage</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">mariage</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">email</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">email</span><span class="o">.</span><span class="n">data</span>
+            <span class="n">communication_list</span><span class="o">=</span><span class="p">[</span><span class="n">email</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">communication_list</span><span class="p">)</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">get_orga_player_email</span><span class="p">(</span><span class="n">status</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">mariage</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">user</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Vous n&#39;avez pas de compte, vous ne pouvez pas changer votre mot de passe. Vérifier les informations que vous avez renseigné&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;page_de_garde&#39;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">code_reset</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">ascii_lowercase</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">code_reset</span><span class="p">)</span>
+                <span class="n">session</span><span class="p">[</span><span class="n">email</span><span class="p">]</span> <span class="o">=</span> <span class="n">code_reset</span>
+                <span class="n">mariage_endoded</span> <span class="o">=</span> <span class="n">quote</span><span class="p">(</span><span class="n">mariage</span><span class="p">)</span>
+                <span class="n">email_encoded</span> <span class="o">=</span> <span class="n">quote</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+                <span class="n">status_encoded</span> <span class="o">=</span> <span class="n">quote</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+                <span class="n">message</span><span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;Votre code pour réinitialiser votre mot de passe est le suivant: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">code_reset</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Vous devez le renseigner en cliquant sur le lien suivant : http://127.0.0.1:5000/reset_password/&quot;</span> <span class="o">+</span> <span class="n">mariage_endoded</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">email_encoded</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">status_encoded</span><span class="p">)</span>
+                <span class="n">send_mail_organisation</span><span class="p">(</span><span class="n">message</span><span class="p">,</span><span class="n">subject</span><span class="p">,</span><span class="n">communication_list</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;reset_password&#39;</span><span class="p">,</span> <span class="n">mariage</span> <span class="o">=</span> <span class="n">mariage_endoded</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">email_encoded</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status_encoded</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;password_forgotten.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="n">get_flashed_messages</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="reset_password"><a class="viewcode-back" href="../../main.html#src.main.reset_password">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/reset_password/&lt;mariage&gt;/&lt;email&gt;/&lt;status&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;get&#39;</span><span class="p">,</span><span class="s1">&#39;post&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">reset_password</span><span class="p">(</span><span class="n">mariage</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">status</span><span class="p">):</span>
+    <span class="n">mariage_decoded</span> <span class="o">=</span> <span class="n">unquote</span><span class="p">(</span><span class="n">mariage</span><span class="p">)</span>
+    <span class="n">email_decoded</span> <span class="o">=</span> <span class="n">unquote</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
+    <span class="n">status_decoded</span> <span class="o">=</span> <span class="n">unquote</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">ChangePassword</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">verify_code</span><span class="p">(</span><span class="n">session</span><span class="p">[</span><span class="n">email_decoded</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">must_be_equal</span><span class="p">():</span>
+                    <span class="n">user</span> <span class="o">=</span> <span class="n">get_orga_player_email</span><span class="p">(</span><span class="n">status_decoded</span><span class="p">,</span> <span class="n">email_decoded</span><span class="p">,</span> <span class="n">mariage_decoded</span><span class="p">)</span>
+                    <span class="n">user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">generate_password_hash</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">new_password</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+                    <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                    <span class="n">session</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">email_decoded</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">status_decoded</span> <span class="o">==</span> <span class="s1">&#39;guest&#39;</span><span class="p">:</span>
+                        <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Votre mot de passe a bien été modifié&quot;</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;guest.log_guest&#39;</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">status_decoded</span> <span class="o">==</span> <span class="s1">&#39;orga&#39;</span><span class="p">:</span>
+                        <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Votre mot de passe a bien été modifié&quot;</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;orga.log_orga&#39;</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span> 
+                    <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Les deux mots de passe doivent être les mêmes&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;reset_password&#39;</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span> 
+                <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Le code renseigné est mauvais&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;reset_password&#39;</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span> 
+            <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Les informations sont mal renseignées&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;reset_password&#39;</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">email</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;reset_password.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="n">get_flashed_messages</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="add_guest"><a class="viewcode-back" href="../../main.html#src.main.add_guest">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/add_guest/&lt;mariage&gt;/&lt;statut&gt;/&lt;ident&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;get&#39;</span><span class="p">,</span><span class="s1">&#39;post&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">add_guest</span><span class="p">(</span><span class="n">mariage</span><span class="p">,</span> <span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function &#39;add_guest&#39; handle the back-end of the add_guest page : it allows an organizers to give its guest&#39;s list.</span>
+
+<span class="sd">    :param mariage: name of the mariage of the guest accessing to its personnal profil</span>
+<span class="sd">    :type mariage: str</span>
+<span class="sd">    </span>
+<span class="sd">    :return: Page of the add_guest </span>
+<span class="sd">    :rtype: template</span>
+<span class="sd">    &quot;&quot;&quot;</span> 
+    <span class="nd">@orga_login_required_id</span><span class="p">(</span><span class="n">ident</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">():</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">UploadFile</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+                <span class="c1">#first, we create a folder for this wedding </span>
+                <span class="n">dossier_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">static_folder</span><span class="p">,</span> <span class="n">mariage</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dossier_path</span><span class="p">):</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">dossier_path</span><span class="p">)</span>
+                
+                <span class="c1">#file with the guest list</span>
+                <span class="n">file_guest</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">file_guest</span><span class="o">.</span><span class="n">data</span> 
+                <span class="n">file_guest</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dossier_path</span><span class="p">,</span> <span class="n">secure_filename</span><span class="p">(</span><span class="n">file_guest</span><span class="o">.</span><span class="n">filename</span><span class="p">)))</span>
+                <span class="n">file_guest_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dossier_path</span><span class="p">,</span> <span class="n">file_guest</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+                <span class="c1">#checking is the file is an excel</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">file_guest_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.xlsx&#39;</span><span class="p">):</span>
+                    <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Vous ne pouvez importer que des fichiers excel&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;add_guest&#39;</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">))</span>
+                
+                <span class="c1"># file with the table list</span>
+                <span class="n">file_tables</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">file_tables</span><span class="o">.</span><span class="n">data</span> 
+                <span class="n">file_tables</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dossier_path</span><span class="p">,</span> <span class="n">secure_filename</span><span class="p">(</span><span class="n">file_tables</span><span class="o">.</span><span class="n">filename</span><span class="p">)))</span>
+                <span class="n">file_tables_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dossier_path</span><span class="p">,</span> <span class="n">file_tables</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">file_tables_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.xlsx&#39;</span><span class="p">):</span>
+                    <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Vous ne pouvez importer que des fichiers excel&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;add_guest&#39;</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">))</span>
+                
+                <span class="c1">#trying to import the files</span>
+                <span class="k">try</span><span class="p">:</span>   
+                    <span class="n">wb_guest</span> <span class="o">=</span> <span class="n">load_workbook</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span> <span class="n">file_guest_path</span> <span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                    <span class="n">wb_tables</span> <span class="o">=</span> <span class="n">load_workbook</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">file_tables_path</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                    <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Le fichier spécifié est introuvable.&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;add_guest&#39;</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Une erreur s&#39;est produite lors de l&#39;enregistrement du fichier. Vérifier que le fichier est au bon format.&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;add_guest&#39;</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+            
+                <span class="c1">#treating the guests&#39; file</span>
+                <span class="n">sheet_guest</span> <span class="o">=</span> <span class="n">wb_guest</span><span class="o">.</span><span class="n">active</span>
+                <span class="n">rows_g</span> <span class="o">=</span> <span class="n">sheet_guest</span><span class="o">.</span><span class="n">max_row</span> 
+                <span class="n">cols_g</span> <span class="o">=</span> <span class="n">sheet_guest</span><span class="o">.</span><span class="n">max_column</span>
+                <span class="n">first_row_g</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">rows_g</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">sheet_guest</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span> <span class="o">=</span> <span class="n">j</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="n">cols_g</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> 
+                        <span class="n">first_row_g</span> <span class="o">=</span> <span class="n">j</span>
+                        <span class="k">break</span>
+
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="n">first_row_g</span> <span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">rows_g</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">guest_email</span> <span class="o">=</span> <span class="n">sheet_guest</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span> <span class="o">=</span> <span class="n">j</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="n">cols_g</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> 
+                    <span class="k">if</span> <span class="n">Guest</span><span class="o">.</span><span class="n">get_guest_mail</span><span class="p">(</span><span class="n">mariage</span><span class="p">,</span> <span class="n">guest_email</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">guest</span> <span class="o">=</span> <span class="n">Guest</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                            <span class="n">name</span> <span class="o">=</span> <span class="n">sheet_guest</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span> <span class="o">=</span> <span class="n">j</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="n">cols_g</span><span class="o">-</span><span class="mi">2</span> <span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                            <span class="n">surname</span> <span class="o">=</span> <span class="n">sheet_guest</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span> <span class="o">=</span> <span class="n">j</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="n">cols_g</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> 
+                            <span class="n">email</span> <span class="o">=</span> <span class="n">guest_email</span><span class="p">,</span>
+                            <span class="n">mariage</span> <span class="o">=</span> <span class="n">mariage</span>
+                        <span class="p">)</span>
+                        <span class="n">guest</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="c1"># treating the tables&#39; file </span>
+                <span class="n">sheet_tables</span> <span class="o">=</span> <span class="n">wb_tables</span><span class="o">.</span><span class="n">active</span>
+                <span class="n">rows_t</span> <span class="o">=</span> <span class="n">sheet_tables</span><span class="o">.</span><span class="n">max_row</span> 
+                <span class="n">cols_t</span> <span class="o">=</span> <span class="n">sheet_tables</span><span class="o">.</span><span class="n">max_column</span>
+                <span class="n">first_row_t</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">rows_t</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">sheet_tables</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span> <span class="o">=</span> <span class="n">j</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="n">cols_t</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> 
+                        <span class="n">first_row_t</span> <span class="o">=</span> <span class="n">j</span>
+                        <span class="k">break</span>
+
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">first_row_t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">rows_t</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">table_capacity</span> <span class="o">=</span> <span class="n">sheet_tables</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span> <span class="o">=</span> <span class="n">j</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="n">cols_t</span><span class="o">-</span><span class="mi">1</span> <span class="p">)</span><span class="o">.</span><span class="n">value</span>
+                    <span class="n">table_number</span> <span class="o">=</span> <span class="n">sheet_tables</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">row</span> <span class="o">=</span> <span class="n">j</span><span class="p">,</span> <span class="n">column</span> <span class="o">=</span> <span class="n">cols_t</span> <span class="p">)</span><span class="o">.</span><span class="n">value</span>
+                    <span class="n">table</span> <span class="o">=</span> <span class="n">Tables</span><span class="o">.</span><span class="n">get_table_capa</span><span class="p">(</span><span class="n">mariage</span><span class="p">,</span> <span class="n">table_capacity</span><span class="p">)</span> 
+                    <span class="k">if</span> <span class="n">table</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>    
+                        <span class="n">new_table</span> <span class="o">=</span> <span class="n">Tables</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+                            <span class="n">mariage</span> <span class="o">=</span> <span class="n">mariage</span><span class="p">,</span>
+                            <span class="n">capacity</span> <span class="o">=</span> <span class="n">table_capacity</span><span class="p">,</span>
+                            <span class="n">number</span> <span class="o">=</span> <span class="n">table_number</span>
+                        <span class="p">)</span>
+                        <span class="n">new_table</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span> 
+                        <span class="n">table</span><span class="o">.</span><span class="n">number</span> <span class="o">=</span> <span class="n">table_number</span>
+                        <span class="n">table</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+                <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Le fichier a bien été traité et enregistré. Vous pouvez désormais aller consulter votre liste d&#39;inviter dans l&#39;onglet correspondant !&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;add_guest&#39;</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>  
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Un des champs renseigné n&#39;est pas valide&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;add_guest&#39;</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s1">&#39;orga_add_guest.html&#39;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="n">get_flashed_messages</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">wrapper</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="table_assigment"><a class="viewcode-back" href="../../main.html#src.main.table_assigment">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/tables_assignment/&lt;statut&gt;/&lt;mariage&gt;/&lt;ident&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">table_assigment</span><span class="p">(</span><span class="n">statut</span><span class="p">,</span><span class="n">mariage</span><span class="p">,</span> <span class="n">ident</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function &#39;table_assignment&#39; handle the back-end of the table assignment page :</span>
+<span class="sd">    it allows an organizers to generate a table assignement for the players of his wedding.</span>
+
+<span class="sd">    :param mariage: name of the mariage of the guest accessing to its personnal profil</span>
+<span class="sd">    :type mariage: str</span>
+<span class="sd">    </span>
+<span class="sd">    :return: Page of tables table assignment </span>
+<span class="sd">    :rtype: template</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@orga_login_required_id</span><span class="p">(</span><span class="n">ident</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">():</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">ExchangeSeats</span><span class="p">(</span><span class="n">mariage</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+                <span class="n">id_1</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">player_1</span><span class="o">.</span><span class="n">data</span>
+                <span class="n">id_2</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">player_2</span><span class="o">.</span><span class="n">data</span>
+                <span class="k">if</span> <span class="n">id_1</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">id_2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Veuillez sélectionner 2 invités pour effectuer l&#39;échange&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;table_assigment&#39;</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">player_1</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">get_player_id</span><span class="p">(</span><span class="n">id_1</span><span class="p">)</span>
+                    <span class="n">player_2</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">get_player_id</span><span class="p">(</span><span class="n">id_2</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">player_1</span> <span class="o">==</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">player_2</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span> 
+                        <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;L&#39;une des deux personnes sélectrionnée n&#39;est pas invité à ce mariage.&quot;</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;table_assigment&#39;</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+                    
+                    <span class="n">table_1</span> <span class="o">=</span> <span class="n">player_1</span><span class="o">.</span><span class="n">table</span>
+                    <span class="n">table_2</span> <span class="o">=</span> <span class="n">player_2</span><span class="o">.</span><span class="n">table</span>
+                    <span class="n">player_1</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="n">table_2</span>
+                    <span class="n">player_1</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                    <span class="n">player_2</span><span class="o">.</span><span class="n">table</span> <span class="o">=</span> <span class="n">table_1</span>
+                    <span class="n">player_2</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;orga.seating_plan&#39;</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+
+        <span class="c1"># We have to make sure there is no table with 0 capacity</span>
+        <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">Tables</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Tables</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="n">mariage</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">table</span><span class="o">.</span><span class="n">capacity</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">table</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">()</span>
+
+        <span class="n">event</span> <span class="o">=</span> <span class="n">RO</span><span class="o">.</span><span class="n">Event</span><span class="p">(</span><span class="n">mariage</span><span class="p">)</span>
+        <span class="n">P</span> <span class="o">=</span> <span class="n">RO</span><span class="o">.</span><span class="n">PLNE_solver</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">mariage</span><span class="p">)</span>
+        <span class="n">PLNE</span> <span class="o">=</span> <span class="n">P</span><span class="o">.</span><span class="n">seating_plan</span><span class="p">()</span>
+        <span class="n">feasibility</span><span class="p">,</span> <span class="n">repartition</span> <span class="o">=</span> <span class="n">PLNE</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">PLNE</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">feasibility</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">flash</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="s2">&quot;Impossible de générer un plan de table avec &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">repartition</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; invités, et &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">repartition</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; places.&#39;</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> Veuillez ajouter des places pour générer un plan de table.&quot;</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;orga.guest_list&#39;</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span><span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">))</span>
+        <span class="n">nb_table</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">repartition</span><span class="p">)</span>
+        <span class="n">table_assignement</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">nb_people_side_fav</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">Player</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="n">mariage</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">table</span><span class="o">.</span><span class="n">is_null</span><span class="p">(</span><span class="kc">False</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">query</span><span class="p">:</span>
+            <span class="n">table_assignement</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">player</span><span class="o">.</span><span class="n">color</span><span class="p">(),</span><span class="n">player</span><span class="o">.</span><span class="n">table</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">same_table</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">favorite_guest_1</span><span class="p">):</span>
+                <span class="n">nb_people_side_fav</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">same_table</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">favorite_guest_2</span><span class="p">):</span>
+                <span class="n">nb_people_side_fav</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">same_table</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">favorite_guest_3</span><span class="p">):</span>
+                <span class="n">nb_people_side_fav</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">nb_guest</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">table_assignement</span><span class="p">)</span>
+
+        <span class="n">nb_couple_side_by_side</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">couple</span> <span class="o">=</span> <span class="n">Player</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">Player</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="n">mariage</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">couple_situation</span> <span class="o">==</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">nb_couple</span> <span class="o">=</span> <span class="n">couple</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">/</span><span class="mi">2</span>
+        <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">couple</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">player</span><span class="o">.</span><span class="n">same_table</span><span class="p">(</span><span class="n">player</span><span class="o">.</span><span class="n">partner_name</span><span class="p">):</span>
+                <span class="n">nb_couple_side_by_side</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">&quot;orga_table_assigment.html&quot;</span><span class="p">,</span> <span class="n">statut</span><span class="o">=</span><span class="n">statut</span><span class="p">,</span> <span class="n">ident</span><span class="o">=</span><span class="n">ident</span><span class="p">,</span> <span class="n">mariage</span><span class="o">=</span><span class="n">mariage</span><span class="p">,</span> <span class="n">seating_plan_bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">table_assignement</span><span class="o">=</span><span class="n">table_assignement</span><span class="p">,</span>
+                               <span class="n">nb_table</span><span class="o">=</span><span class="n">nb_table</span><span class="p">,</span> <span class="n">nb_guest</span><span class="o">=</span><span class="n">nb_guest</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span> <span class="n">nb_couple_side_by_side</span><span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nb_couple_side_by_side</span><span class="o">/</span><span class="mi">2</span><span class="p">),</span> <span class="n">nb_couple</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">nb_couple</span><span class="p">),</span> <span class="n">nb_people_side_fav</span><span class="o">=</span><span class="n">nb_people_side_fav</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="n">get_flashed_messages</span><span class="p">()</span> <span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrapper</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="download"><a class="viewcode-back" href="../../main.html#src.main.download">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/uploads/&lt;path:filename&gt;/&lt;ident&gt;/&lt;mariage&gt;/&lt;statut&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">download</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ident</span><span class="p">,</span> <span class="n">mariage</span><span class="p">,</span> <span class="n">statut</span><span class="p">):</span>
+    <span class="c1"># Appending app path to upload folder path within app root folder</span>
+    <span class="n">uploads</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_app</span><span class="o">.</span><span class="n">root_path</span><span class="p">,</span> <span class="n">app</span><span class="o">.</span><span class="n">static_folder</span><span class="p">,</span> <span class="s1">&#39;upload&#39;</span><span class="p">)</span>
+    <span class="c1"># Returning file from appended path</span>
+    <span class="k">return</span> <span class="n">send_from_directory</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="n">uploads</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="download_seating_plan"><a class="viewcode-back" href="../../main.html#src.main.download_seating_plan">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/upload_seating_plan/&lt;ident&gt;/&lt;mariage&gt;/&lt;statut&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">download_seating_plan</span><span class="p">(</span><span class="n">ident</span><span class="p">,</span> <span class="n">mariage</span><span class="p">,</span> <span class="n">statut</span><span class="p">):</span>
+    <span class="c1"># Appending app path to upload folder path within app root folder</span>
+    <span class="n">dossier_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">static_folder</span><span class="p">,</span> <span class="n">mariage</span><span class="p">,</span> <span class="s2">&quot;upload_seating_plan&quot;</span><span class="p">)</span>
+    <span class="n">excel_file</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s1">&#39;seating_plan_&#39;</span> <span class="o">+</span> <span class="n">mariage</span> <span class="o">+</span> <span class="s1">&#39;.xlsx&#39;</span><span class="p">)</span>
+    <span class="n">path_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dossier_path</span><span class="p">,</span> <span class="n">excel_file</span><span class="p">)</span>
+    <span class="n">nb_table</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">Tables</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Tables</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="n">mariage</span><span class="p">):</span>
+        <span class="n">nb_table</span> <span class="o">+=</span> <span class="n">table</span><span class="o">.</span><span class="n">number</span>
+    <span class="n">dict_table</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1">### attention ValueError: All arrays must be of the same length !! </span>
+    <span class="c1">## on récupère alors le maximum des capacite, on créer des liste de cette taille la et on ne rempli</span>
+    <span class="c1">## que les cases concernées </span>
+    <span class="n">max_value</span> <span class="o">=</span> <span class="n">Tables</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">MAX</span><span class="p">(</span><span class="n">Tables</span><span class="o">.</span><span class="n">capacity</span><span class="p">))</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">Tables</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span> <span class="n">mariage</span><span class="p">)</span><span class="o">.</span><span class="n">scalar</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span> <span class="p">(</span><span class="n">nb_table</span><span class="p">):</span>
+        <span class="n">table_i</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span><span class="o">*</span><span class="n">max_value</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">player</span> <span class="ow">in</span> <span class="n">Player</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">Player</span><span class="o">.</span><span class="n">mariage</span> <span class="o">==</span><span class="n">mariage</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">Player</span><span class="o">.</span><span class="n">table</span> <span class="o">==</span> <span class="n">i</span><span class="p">)):</span>
+            <span class="n">table_i</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">player</span><span class="o">.</span><span class="n">full_name</span><span class="p">()</span>
+            <span class="n">j</span><span class="o">+=</span><span class="mi">1</span>
+        <span class="n">dict_table</span><span class="p">[</span><span class="s2">&quot;table &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">table_i</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">dossier_path</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path_file</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">dossier_path</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">dict_table</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="n">path_file</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">send_from_directory</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="n">dossier_path</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">excel_file</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_fake_mariage"><a class="viewcode-back" href="../../main.html#src.main.create_fake_mariage">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/create_fake_mariage/&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">create_fake_mariage</span><span class="p">():</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">nb_guest_couple</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">name_orga_available</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">name_player_available</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">verify_nb_couple</span><span class="p">():</span>
+                                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s2">&quot;generate_wedding_nb_tables&quot;</span><span class="p">,</span> <span class="n">mariage_name</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">nb_guest</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">nb_guest</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                                                         <span class="n">nb_couple</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">nb_couple</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Le nombre de couples rensigné est trop grand par rapport au nombre d&#39;invités </span><span class="se">\n</span><span class="s2"> Veuillez renseigner un nombre de couples inférieur au double du nombre d&#39;invités&quot;</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s2">&quot;create_fake_mariage&quot;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span> 
+                <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Le nom de mariage que vous avez renseigné n&#39;est pas disponible, veuillez en choisir un autre&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s2">&quot;create_fake_mariage&quot;</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">&quot;generate_wedding.html&quot;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span><span class="n">is_generated</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="n">get_flashed_messages</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="generate_wedding_nb_tables"><a class="viewcode-back" href="../../main.html#src.main.generate_wedding_nb_tables">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/create_fake_mariage_nb_tables/&lt;mariage_name&gt;/&lt;nb_guest&gt;/&lt;nb_couple&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">generate_wedding_nb_tables</span><span class="p">(</span><span class="n">mariage_name</span><span class="p">,</span> <span class="n">nb_guest</span><span class="p">,</span> <span class="n">nb_couple</span><span class="p">):</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">TablesFakeMariage</span><span class="p">(</span><span class="n">nb_guest</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+            <span class="c1"># careful : the form.field.data are string, we have to recreate lists to utilize them</span>
+            <span class="nb">list</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">table_capacity_number</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;[]&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;], [&quot;</span><span class="p">)</span>
+            <span class="n">tables</span> <span class="o">=</span> <span class="p">[[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sub_list</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">)]</span> <span class="k">for</span> <span class="n">sub_list</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">tables</span><span class="p">)</span>
+            <span class="n">mar</span> <span class="o">=</span> <span class="n">CreateMariage</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">nb_guest</span><span class="p">),</span> <span class="n">tables</span><span class="p">,</span> <span class="n">mariage_name</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">nb_couple</span><span class="p">))</span>
+            <span class="n">mar</span><span class="o">.</span><span class="n">create_player</span><span class="p">()</span>
+            <span class="n">mar</span><span class="o">.</span><span class="n">create_tables</span><span class="p">()</span>
+            <span class="n">email_player</span> <span class="o">=</span> <span class="n">mar</span><span class="o">.</span><span class="n">guest_not_in_couple_isnt_coming</span><span class="p">()</span> <span class="c1"># deleting one player from the database, not in a couple for simplicity</span>
+            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;fake_mariage_created&#39;</span><span class="p">,</span> <span class="n">email_player</span><span class="o">=</span><span class="n">email_player</span><span class="p">,</span> <span class="n">mariage_name</span><span class="o">=</span><span class="n">mariage_name</span><span class="p">,</span> <span class="n">nb_couple</span><span class="o">=</span><span class="n">nb_couple</span><span class="p">,</span> <span class="n">nb_guest</span><span class="o">=</span><span class="n">nb_guest</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">&quot;generate_wedding_nb_tables.html&quot;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span> <span class="n">mariage_name</span><span class="o">=</span><span class="n">mariage_name</span><span class="p">,</span> <span class="n">nb_guest</span><span class="o">=</span><span class="n">nb_guest</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="fake_mariage_created"><a class="viewcode-back" href="../../main.html#src.main.fake_mariage_created">[docs]</a><span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">&#39;/fake_mariage_created/&lt;email_player&gt;/&lt;mariage_name&gt;/&lt;nb_guest&gt;/&lt;nb_couple&gt;&#39;</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span> <span class="s1">&#39;POST&#39;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">fake_mariage_created</span><span class="p">(</span><span class="n">email_player</span><span class="p">,</span> <span class="n">mariage_name</span><span class="p">,</span> <span class="n">nb_guest</span><span class="p">,</span> <span class="n">nb_couple</span><span class="p">):</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">nb_guest_couple</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;POST&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">validate_on_submit</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">name_orga_available</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">name_player_available</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">verify_nb_couple</span><span class="p">():</span>
+                                <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s2">&quot;generate_wedding_nb_tables&quot;</span><span class="p">,</span> <span class="n">mariage_name</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">nb_guest</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">nb_guest</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">nb_couple</span><span class="o">=</span><span class="n">form</span><span class="o">.</span><span class="n">nb_couple</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Le nombre de couple rensigné est trop grand par rapport aux nombre d&#39;invités </span><span class="se">\n</span><span class="s2"> Veuillez renseigner un nombre de couple inférieur au double du nombre d&#39;invités&quot;</span><span class="p">)</span>
+                        <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;fake_mariage_created&#39;</span><span class="p">,</span> <span class="n">email_player</span><span class="o">=</span><span class="n">email_player</span><span class="p">,</span> <span class="n">mariage_name</span><span class="o">=</span><span class="n">mariage_name</span><span class="p">,</span> <span class="n">nb_couple</span><span class="o">=</span><span class="n">nb_couple</span><span class="p">,</span> <span class="n">nb_guest</span><span class="o">=</span><span class="n">nb_guest</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span> 
+                <span class="n">flash</span><span class="p">(</span><span class="s2">&quot;Le nom de mariage que vous avez renseigné n&#39;est pas disponible, veuillez en choisir un autre&quot;</span><span class="p">)</span>
+                <span class="n">redirect</span><span class="p">(</span><span class="n">url_for</span><span class="p">(</span><span class="s1">&#39;fake_mariage_created&#39;</span><span class="p">,</span> <span class="n">email_player</span><span class="o">=</span><span class="n">email_player</span><span class="p">,</span> <span class="n">mariage_name</span><span class="o">=</span><span class="n">mariage_name</span><span class="p">,</span> <span class="n">nb_couple</span><span class="o">=</span><span class="n">nb_couple</span><span class="p">,</span> <span class="n">nb_guest</span><span class="o">=</span><span class="n">nb_guest</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">render_template</span><span class="p">(</span><span class="s2">&quot;generate_wedding.html&quot;</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span><span class="n">is_generated</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">email_player</span><span class="o">=</span><span class="n">email_player</span><span class="p">,</span>
+                            <span class="n">mariage_name</span><span class="o">=</span><span class="n">mariage_name</span><span class="p">,</span> <span class="n">nb_couple</span><span class="o">=</span><span class="n">nb_couple</span><span class="p">,</span> <span class="n">nb_guest</span><span class="o">=</span><span class="n">nb_guest</span><span class="p">,</span> <span class="n">messages</span><span class="o">=</span><span class="n">get_flashed_messages</span><span class="p">())</span></div>
+
+
+<span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Lucas Sautier - Pierre-Louis Le Goff - Nicolas Corvol - Garance Gérard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

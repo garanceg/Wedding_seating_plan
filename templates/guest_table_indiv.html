@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<img id ="fond_guest_list_table" src="{{ url_for('static', filename='fond_guest_list_table.jpg') }}">
+
+<div class = "forme">
+{% if statut == 'guest' %}<br>
+    <h2>Voici votre table pour la réception de ce mariage :</h2>
+
+    <ol>
+        {% for personne in same_table %}
+            {{personne}}<br>
+        {% endfor %}        
+    </ol>
+
+{% else %}
+    <h2>Voici la table de {{ full_name }} pour la réception de ce mariage :</h2><br><br>
+    <ol>
+        {% for personne in same_table %}
+            {{personne}}<br>
+        {% endfor %}        
+    </ol>
+{% endif %}
+</div>
+{% include 'footer.html' %}
+{% endblock %} 
+
+

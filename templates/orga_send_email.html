@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<img id ="fond_send_email" src="{{ url_for('static', filename='fond_send_mail.jpg') }}" >
+
+<div class="forme">
+    <h2 style="color: #dfcece;  text-shadow: 2px 2px 3px black; position:relative; top:10%;">Diffusion de l'invitation pour le mariage</h2><br>
+    <form action="" method="POST"> 
+        <label for ="subject" style="color: #dfcece">Objet du mail</label><br>
+        <input type="text" style="width:400px;" name="subject" required><br><br>
+        <label for ="body" style="color: #dfcece">Contenu du mail</label><br>
+        <textarea type="text" name="body" rows="6" required> </textarea><br><br><br>
+        <input type="submit" value ="Envoi du mail ">
+    </form>
+</div>
+
+{% endblock %}
